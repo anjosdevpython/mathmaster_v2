@@ -1,0 +1,9 @@
+{
+  "name": "MathMaster - Mental Challenge",
+  "description": "An interactive mental math game with progressive levels, scoring systems, and modern UI/UX design.",
+  "short_name": "MathMaster",
+  "theme_color": "#4f46e5",
+  "background_color": "#1e1b4b",
+  "display": "standalone",
+  "requestFramePermissions": []
+}
