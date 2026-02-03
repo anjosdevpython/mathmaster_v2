@@ -9,8 +9,6 @@ import { HomeView } from './views/HomeView';
 import { LevelSelectView } from './views/LevelSelectView';
 import { GameView } from './views/GameView';
 import { supabase } from './lib/supabase';
-import { TutorialOverlay } from './components/TutorialOverlay';
-
 import { PersistenceService } from './services/persistence';
 
 const App: React.FC = () => {
@@ -34,7 +32,6 @@ const App: React.FC = () => {
   const [visibleSteps, setVisibleSteps] = useState<number>(0);
   const [isFlashing, setIsFlashing] = useState(false);
   const [selectedOps, setSelectedOps] = useState<string[]>(['+', '-', '*', '/']);
-  const [showTutorial, setShowTutorial] = useState(false);
 
   useEffect(() => {
     const data = PersistenceService.load();
@@ -130,12 +127,6 @@ const App: React.FC = () => {
   useEffect(() => {
     // Inicializa persistência
     PersistenceService.init();
-
-    // Verifica tutorial
-    const hasSeenTutorial = localStorage.getItem('has_seen_tutorial');
-    if (!hasSeenTutorial) {
-      setShowTutorial(true);
-    }
 
     // Atualiza título com nome do usuário
     const updateTitle = async () => {
@@ -233,7 +224,6 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
-      {showTutorial && <TutorialOverlay onClose={() => { setShowTutorial(false); localStorage.setItem('has_seen_tutorial', 'true'); }} />}
     </div>
   );
 };
