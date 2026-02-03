@@ -5,6 +5,7 @@ const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
     if (!canvas) return;
 
     // Set canvas dimensions explicitly to avoid potential 0x0
