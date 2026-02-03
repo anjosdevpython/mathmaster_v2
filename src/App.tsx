@@ -9,6 +9,8 @@ import { HomeView } from './views/HomeView';
 import { LevelSelectView } from './views/LevelSelectView';
 import { GameView } from './views/GameView';
 
+import { PersistenceService } from './services/persistence';
+
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.HOME);
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
@@ -31,8 +33,8 @@ const App: React.FC = () => {
   const [selectedOps, setSelectedOps] = useState<string[]>(['+', '-', '*', '/']);
 
   useEffect(() => {
-    const saved = localStorage.getItem('mathMasterLevel');
-    if (saved) setUnlockedLevel(Math.max(1, parseInt(saved, 10)));
+    const data = PersistenceService.load();
+    setUnlockedLevel(Math.max(1, data.unlockedLevel));
   }, []);
 
   const startLevel = useCallback((levelNum: number, reset = false, isTraining = false) => {
@@ -62,11 +64,14 @@ const App: React.FC = () => {
     const config = LEVELS[stats.currentLevel - 1] || LEVELS[0];
 
     if (!isTraining && stats.currentQuestionIndex + 1 >= config.totalQuestions) {
-      setUnlockedLevel(p => {
-        const n = Math.max(p, stats.currentLevel + 1);
-        localStorage.setItem('mathMasterLevel', n.toString());
-        return n;
-      });
+      // Level Complete
+      const nextLevel = stats.currentLevel + 1;
+
+      // Persist Progress
+      PersistenceService.updateLevel(nextLevel);
+      PersistenceService.updateScore(stats.currentLevel, stats.score);
+
+      setUnlockedLevel(p => Math.max(p, nextLevel));
       setGameState(GameState.LEVEL_COMPLETE);
     } else {
       const q = generateQuestion(config, selectedOps);
