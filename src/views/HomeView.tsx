@@ -1,5 +1,6 @@
 import React from 'react';
 import { GameState } from '../types';
+import { PersistenceService } from '../services/persistence';
 
 interface HomeViewProps {
     setGameState: (state: GameState) => void;
@@ -81,19 +82,13 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                 <div className="flex gap-4">
                     <button
                         onClick={() => {
-                            // Dynamic import to avoid circular dependency issues if any, or just use direct usage if imported
-                            // Assuming PersistenceService is available or passed as prop. 
-                            // Since HomeView is a component, let's allow it to handle this via props or direct import if clean.
-                            // Better: Implement the logic directly here importing the service.
-                            import('../services/persistence').then(({ PersistenceService }) => {
-                                const json = PersistenceService.exportData();
-                                const blob = new Blob([json], { type: 'application/json' });
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `mathmaster_save_${new Date().toISOString().split('T')[0]}.json`;
-                                a.click();
-                            });
+                            const json = PersistenceService.exportData();
+                            const blob = new Blob([json], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `mathmaster_save_${new Date().toISOString().split('T')[0]}.json`;
+                            a.click();
                         }}
                         className="text-[10px] font-mono text-white/30 hover:text-white transition-colors uppercase tracking-wider"
                     >
@@ -109,19 +104,17 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                    import('../services/persistence').then(({ PersistenceService }) => {
-                                        const reader = new FileReader();
-                                        reader.onload = (ev) => {
-                                            const content = ev.target?.result as string;
-                                            if (PersistenceService.importData(content)) {
-                                                alert('Dados importados com sucesso! O sistema será reiniciado.');
-                                                window.location.reload();
-                                            } else {
-                                                alert('Erro ao importar dados. Arquivo inválido.');
-                                            }
-                                        };
-                                        reader.readAsText(file);
-                                    });
+                                    const reader = new FileReader();
+                                    reader.onload = (ev) => {
+                                        const content = ev.target?.result as string;
+                                        if (PersistenceService.importData(content)) {
+                                            alert('Dados importados com sucesso! O sistema será reiniciado.');
+                                            window.location.reload();
+                                        } else {
+                                            alert('Erro ao importar dados. Arquivo inválido.');
+                                        }
+                                    };
+                                    reader.readAsText(file);
                                 }
                             }}
                         />
