@@ -14,6 +14,7 @@ import { TutorialOverlay } from './components/TutorialOverlay';
 import { PersistenceService } from './services/persistence';
 
 const App: React.FC = () => {
+  useEffect(() => { console.log("MathMaster v2.1.0 - Auth & Title Update"); }, []);
   const [gameState, setGameState] = useState<GameState>(GameState.HOME);
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [stats, setStats] = useState<GameStats>({
