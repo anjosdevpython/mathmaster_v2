@@ -9,7 +9,7 @@ import { HomeView } from './views/HomeView';
 import { LevelSelectView } from './views/LevelSelectView';
 import { GameView } from './views/GameView';
 import { supabase } from './lib/supabase';
-import TutorialOverlay from './components/TutorialOverlay';
+import { TutorialOverlay } from './components/TutorialOverlay';
 
 import { PersistenceService } from './services/persistence';
 
