@@ -194,7 +194,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-primary text-background font-bold py-3 rounded-lg uppercase tracking-widest text-sm hover:bg-primary-hover transition-colors disabled:opacity-50 mt-4"
+                                className={`w-full font-bold py-3 rounded-lg uppercase tracking-widest text-sm transition-all disabled:opacity-50 mt-4 ${mode === 'create'
+                                        ? 'bg-[#CD7F32] hover:bg-[#B87333] text-white shadow-[0_0_20px_rgba(205,127,50,0.3)]'
+                                        : 'bg-primary hover:bg-primary-hover text-background'
+                                    }`}
                             >
                                 {loading ? <i className="fas fa-spinner fa-spin"></i> : (mode === 'create' ? 'Salvar Conta' : 'Entrar')}
                             </button>
