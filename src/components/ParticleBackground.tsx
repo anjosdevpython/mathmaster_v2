@@ -5,10 +5,16 @@ const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     if (!canvas) return;
+
+    // Set canvas dimensions explicitly to avoid potential 0x0
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    let simulationRunning = true; // Flag to cleanup animation frame
 
     let particles: Array<{
       x: number;
@@ -20,6 +26,7 @@ const ParticleBackground: React.FC = () => {
     }> = [];
 
     const resize = () => {
+      if (!canvas) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
@@ -40,6 +47,7 @@ const ParticleBackground: React.FC = () => {
     };
 
     const animate = () => {
+      if (!simulationRunning || !ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
         p.x += p.speedX;
@@ -57,11 +65,13 @@ const ParticleBackground: React.FC = () => {
     };
 
     window.addEventListener('resize', resize);
-    resize();
     createParticles();
     animate();
 
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      simulationRunning = false;
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;

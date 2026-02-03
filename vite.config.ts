@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '/mathmaster/', // Necessário para GitHub Pages
+    base: '/mathmaster_v2/', // Necessário para GitHub Pages
     server: {
       port: 3000,
       host: '0.0.0.0',
