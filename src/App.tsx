@@ -124,6 +124,37 @@ const App: React.FC = () => {
   }, [showExplanation, currentQuestion]);
 
   useEffect(() => {
+    // Inicializa persistência
+    PersistenceService.init();
+
+    // Verifica tutorial
+    const hasSeenTutorial = localStorage.getItem('has_seen_tutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+    }
+
+    // Atualiza título com nome do usuário
+    const updateTitle = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.user_metadata?.username) {
+        document.title = `MathMaster | ${user.user_metadata.username}`;
+      } else {
+        document.title = `MathMaster`;
+      }
+    };
+
+    // Chama inicialmente e ouve mudanças de auth
+    updateTitle();
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      updateTitle();
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     if (gameState === GameState.PLAYING && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft(p => {
