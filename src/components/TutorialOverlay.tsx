@@ -4,13 +4,21 @@ import { PowerVisual } from './visuals/PowerVisual';
 import { SqrtVisual } from './visuals/SqrtVisual';
 
 interface TutorialOverlayProps {
-    question: Question;
+    question?: Question;
     onClose: () => void;
 }
 
 export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, onClose }) => {
     const [stepIndex, setStepIndex] = useState(0);
-    const steps = question.explanation?.split('|') || [];
+
+    const defaultSteps = [
+        "Bem-vindo ao MathMaster! Prepare sua mente para desafios de alta performance.",
+        "Escolha as operações que deseja praticar no painel frontal.",
+        "Complete os níveis para desbloquear novos setores e aumentar sua capacidade.",
+        "Dica: No Modo Treino, você tem tempo infinito para aprender as técnicas."
+    ];
+
+    const steps = question?.explanation?.split('|') || defaultSteps;
     const isLastStep = stepIndex >= steps.length - 1;
 
     // Progress bar calculations
@@ -53,14 +61,14 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, onCl
                     </div>
 
                     <div className="scale-125 transform transition-all duration-500">
-                        {question.opType === 'power' && <PowerVisual value={question.values[0]} />}
-                        {question.opType === 'sqrt' && <SqrtVisual target={question.values[0]} answer={question.answer} />}
+                        {question?.opType === 'power' && <PowerVisual value={question.values[0]} />}
+                        {question?.opType === 'sqrt' && <SqrtVisual target={question.values[0]} answer={question.answer} />}
 
                         {/* Generic Visual for other ops - Simple Blocks for now */}
-                        {!['power', 'sqrt'].includes(question.opType) && (
+                        {(!question || !['power', 'sqrt'].includes(question.opType)) && (
                             <div className="flex flex-col items-center gap-4">
-                                <div className="text-6xl font-black font-display text-white/20 animate-float">
-                                    {question.text}
+                                <div className="text-6xl font-black font-display text-white/20 animate-float uppercase">
+                                    {question?.text || 'MathMaster'}
                                 </div>
                                 <div className="flex gap-2">
                                     {/* Abstract representation of numbers */}
