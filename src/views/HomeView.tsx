@@ -78,49 +78,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                 </button>
             </div>
 
-            <footer className="w-full flex flex-col items-center justify-center border-t border-white/5 pt-6 pb-2 mt-8 space-y-4">
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => {
-                            const json = PersistenceService.exportData();
-                            const blob = new Blob([json], { type: 'application/json' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `mathmaster_save_${new Date().toISOString().split('T')[0]}.json`;
-                            a.click();
-                        }}
-                        className="text-[10px] font-mono text-white/30 hover:text-white transition-colors uppercase tracking-wider"
-                    >
-                        <i className="fas fa-download mr-1"></i> Exportar Dados
-                    </button>
-
-                    <label className="text-[10px] font-mono text-white/30 hover:text-white transition-colors uppercase tracking-wider cursor-pointer">
-                        <i className="fas fa-upload mr-1"></i> Importar Dados
-                        <input
-                            type="file"
-                            accept=".json"
-                            className="hidden"
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = (ev) => {
-                                        const content = ev.target?.result as string;
-                                        if (PersistenceService.importData(content)) {
-                                            alert('Dados importados com sucesso! O sistema será reiniciado.');
-                                            window.location.reload();
-                                        } else {
-                                            alert('Erro ao importar dados. Arquivo inválido.');
-                                        }
-                                    };
-                                    reader.readAsText(file);
-                                }
-                            }}
-                        />
-                    </label>
-                </div>
-
+            <footer className="w-full flex items-center justify-center border-t border-white/5 pt-6 pb-2 mt-8">
                 <div className="text-[10px] font-mono text-white/20 tracking-widest uppercase">
                     Desenvolvido por <a href="https://allananjos.dev.br" target="_blank" rel="noreferrer" className="text-accent hover:text-white transition-colors">Allan Anjos</a>
                 </div>
