@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameState } from '../types';
 import { PersistenceService } from '../services/persistence';
+import { AuthModal } from '../components/AuthModal';
 
 interface HomeViewProps {
     setGameState: (state: GameState) => void;
@@ -10,6 +11,7 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, selectedOps, setSelectedOps }) => {
+    const [showAuth, setShowAuth] = useState(false);
     const ops = [
         { id: '+', icon: 'fa-plus', label: 'SOMA' },
         { id: '-', icon: 'fa-minus', label: 'SUB' },
@@ -28,7 +30,15 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
         <div className="flex flex-col items-center justify-evenly h-full w-full max-w-7xl mx-auto px-6 py-4 animate-pop-in relative z-10">
 
             {/* Header Compacto */}
-            <div className="flex flex-col items-center mt-4 md:mt-10 mb-8 md:mb-16">
+            <div className="flex flex-col items-center mt-4 md:mt-10 mb-8 md:mb-16 relative w-full">
+                <button
+                    onClick={() => setShowAuth(true)}
+                    className="absolute right-0 top-0 text-white/30 hover:text-white transition-colors p-2"
+                    title="Minha Conta"
+                >
+                    <i className="fas fa-user-circle text-2xl"></i>
+                </button>
+
                 <h1 className="text-5xl md:text-8xl font-black font-display tracking-tight text-white drop-shadow-2xl mb-2">
                     MATH<span className="text-primary">MASTER</span>
                 </h1>
@@ -36,6 +46,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                     Matemática Mental de Alta Performance
                 </p>
             </div>
+
+            {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
             {/* Config Panel - Mais integrado */}
             <div className="w-full max-w-3xl">
