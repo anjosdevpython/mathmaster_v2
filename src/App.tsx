@@ -12,7 +12,7 @@ import { supabase } from './lib/supabase';
 import { PersistenceService } from './services/persistence';
 
 const App: React.FC = () => {
-  useEffect(() => { console.log("MathMaster v2.2.0 - Universal Deploy Fix"); }, []);
+  useEffect(() => { console.log("MathMaster v2.2.1 - Force Sync Fix"); }, []);
   const [gameState, setGameState] = useState<GameState>(GameState.HOME);
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [stats, setStats] = useState<GameStats>({
