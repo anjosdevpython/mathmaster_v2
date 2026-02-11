@@ -55,23 +55,23 @@ export const GameView: React.FC<GameViewProps> = ({
     return (
         <div className="relative w-full max-w-[430px] h-full mx-auto overflow-hidden bg-background-dark/40 shadow-2xl flex flex-col border-x border-primary/10 animate-pop-in">
             {/* HUD / Header Area */}
-            <header className="relative z-10 px-6 pt-6 flex flex-col gap-4 shrink-0">
-                <div className="flex justify-between items-center mb-1">
+            <header className="relative z-10 px-6 pt-4 flex flex-col gap-2 shrink-0">
+                <div className="flex justify-between items-center">
                     <div className="flex flex-col">
-                        <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Progresso</span>
+                        <span className="text-[9px] uppercase tracking-widest text-primary font-bold">Progresso</span>
                         <div className="flex items-center gap-1">
-                            <span className="text-xs font-medium text-white/80">
+                            <span className="text-[11px] font-medium text-white/80">
                                 {isTraining ? 'Training Mode' : `Questão ${stats.currentQuestionIndex + 1}/10`}
                             </span>
                         </div>
                     </div>
                     {!isTraining && (
                         <div className="flex flex-col items-end">
-                            <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Tempo</span>
+                            <span className="text-[9px] uppercase tracking-widest text-primary font-bold">Tempo</span>
                             <div className={`flex items-center gap-1 tabular-nums transition-colors ${timeLeft <= 5 ? 'text-red-400' : 'text-primary'}`}>
-                                <span className="material-icons text-sm">schedule</span>
-                                <span className="text-base font-bold glow-text">00:{time.s}</span>
-                                <span className="text-[10px] opacity-50">.{time.ms}</span>
+                                <span className="material-icons text-xs">schedule</span>
+                                <span className="text-sm font-bold glow-text">00:{time.s}</span>
+                                <span className="text-[9px] opacity-50">.{time.ms}</span>
                             </div>
                         </div>
                     )}
@@ -91,20 +91,20 @@ export const GameView: React.FC<GameViewProps> = ({
                 <div className="flex justify-between items-center mt-1">
                     <div className="glass-panel px-3 py-1 rounded-full flex items-center gap-2 border-primary/20 backdrop-blur-md">
                         <div className="flex flex-col">
-                            <span className="text-[7px] uppercase tracking-tighter text-slate-400 leading-none">Pontos</span>
-                            <span className="text-primary font-bold tracking-tight text-[10px] leading-none mt-1">{stats.score.toLocaleString()}</span>
+                            <span className="text-[6px] uppercase tracking-tighter text-slate-400 leading-none">Pontos</span>
+                            <span className="text-primary font-bold tracking-tight text-[9px] leading-none mt-1">{stats.score.toLocaleString()}</span>
                         </div>
                         <div className="h-3 w-[1px] bg-white/10" />
                         <div className="flex flex-col">
-                            <span className="text-[7px] uppercase tracking-tighter text-slate-400 leading-none">Combo</span>
-                            <span className="text-success font-bold tracking-tight text-[10px] leading-none mt-1">x{stats.correctInLevel}</span>
+                            <span className="text-[6px] uppercase tracking-tighter text-slate-400 leading-none">Combo</span>
+                            <span className="text-success font-bold tracking-tight text-[9px] leading-none mt-1">x{stats.correctInLevel}</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-1">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div
                                 key={i}
-                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-6 bg-primary shadow-[0_0_8px_#10B981]' : 'w-1.5 bg-white/10'}`}
+                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-5 bg-primary shadow-[0_0_8px_#10B981]' : 'w-1 bg-white/10'}`}
                             />
                         ))}
                     </div>
@@ -112,21 +112,18 @@ export const GameView: React.FC<GameViewProps> = ({
             </header>
 
             {/* Main Problem Area */}
-            <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-8 min-h-0 py-4">
-                <div className="relative group perspective-1000 w-full flex flex-col items-center">
-                    <div className="absolute -top-8 -left-8 w-16 h-16 border-t-2 border-l-2 border-primary/20 rounded-tl-2xl pointer-events-none" />
-                    <div className="absolute -bottom-8 -right-8 w-16 h-16 border-b-2 border-r-2 border-primary/20 rounded-br-2xl pointer-events-none" />
-
-                    <div className="text-center relative mb-4">
-                        <p className="text-[9px] uppercase tracking-[0.4em] text-primary/40 mb-2 font-mono">Maestria Mental</p>
-                        <h1 className={`text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
+            <main className="relative z-10 flex-grow flex flex-col items-center justify-center sm:justify-center md:gap-8 px-6 min-h-0 py-2">
+                <div className="relative group w-full flex flex-col items-center gap-4 sm:gap-8">
+                    <div className="text-center relative">
+                        <p className="text-[8px] uppercase tracking-[0.3em] text-primary/40 mb-1 font-mono">Maestria Mental</p>
+                        <h1 className={`text-5xl sm:text-7xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
                             {currentQuestion.text.split(' ').map((part, i) => (
                                 <span key={i} className={i === 1 ? 'text-primary px-2' : ''}>{part}</span>
                             ))}
                         </h1>
                     </div>
 
-                    <div className="w-full relative group max-w-[320px]">
+                    <div className="w-full relative group max-w-[280px] sm:max-w-[320px]">
                         <input
                             ref={inputRef}
                             type="number"
@@ -134,35 +131,35 @@ export const GameView: React.FC<GameViewProps> = ({
                             onChange={(e) => setUserInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                             placeholder="?"
-                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-[2rem] p-4 py-6 text-5xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
+                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-2xl p-4 py-6 text-4xl sm:text-5xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
                             autoFocus
                         />
                         <button
                             onClick={handleSubmit}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-primary text-background-dark rounded-2xl flex items-center justify-center text-xl shadow-neon hover:scale-105 active:scale-95 transition-all"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-primary text-background-dark rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shadow-neon hover:scale-105 active:scale-95 transition-all"
                         >
                             <span className="material-symbols-outlined font-black">check</span>
                         </button>
                     </div>
 
                     {feedback === 'wrong' && (
-                        <div className="mt-8 w-full flex flex-col sm:flex-row items-center gap-3 animate-pop-in">
+                        <div className="w-full flex flex-col sm:flex-row items-center gap-2 sm:gap-3 animate-pop-in max-w-[280px] sm:max-w-[320px]">
                             <button
                                 onClick={() => setShowExplanation(true)}
                                 disabled={isLoadingAI}
-                                className="flex-1 stitch-btn stitch-btn-primary w-full py-3"
+                                className="flex-1 stitch-btn stitch-btn-primary w-full py-2 sm:py-3 text-[10px] sm:text-xs"
                             >
                                 {isLoadingAI ? (
-                                    <><span className="material-symbols-outlined animate-spin text-sm">sync</span> ANALISANDO...</>
+                                    <><span className="material-symbols-outlined animate-spin text-[10px] sm:text-sm">sync</span> ANALISANDO...</>
                                 ) : (
-                                    <><span className="material-symbols-outlined text-sm">school</span> MACETE DO MESTRE</>
+                                    <><span className="material-symbols-outlined text-[10px] sm:text-sm">school</span> MACETE DO MESTRE</>
                                 )}
                             </button>
                             <button
                                 onClick={nextQ}
-                                className="flex-1 stitch-btn stitch-btn-outline w-full py-3"
+                                className="flex-1 stitch-btn stitch-btn-outline w-full py-2 sm:py-3 text-[10px] sm:text-xs"
                             >
-                                <span className="material-symbols-outlined text-sm">fast_forward</span> PULAR
+                                <span className="material-symbols-outlined text-[10px] sm:text-sm">fast_forward</span> PULAR
                             </button>
                         </div>
                     )}

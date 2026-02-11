@@ -161,7 +161,7 @@ const App: React.FC = () => {
   }, [gameState, timeLeft]);
 
   return (
-    <div className="h-screen w-screen bg-background text-slate-100 flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary/30">
+    <div className="h-[100dvh] w-screen bg-background text-slate-100 flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary/30">
       {/* Redesign Background Layers */}
       <div className="fixed inset-0 pointer-events-none star-bg z-0 opacity-40"></div>
       <div className="fixed inset-0 pointer-events-none cyber-grid z-0 opacity-20"></div>
