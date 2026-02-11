@@ -178,13 +178,16 @@ const App: React.FC = () => {
     // Timer para modo jogo normal ou modo treino com tempo
     const isTimedMode = gameState === GameState.PLAYING || (gameState === GameState.TRAINING && timedTraining);
 
-    // Pausa o timer se a explicação estiver aberta
-    if (isTimedMode && timeLeft > 0 && !showExplanation) {
+    // Pausa o timer se a explicação estiver aberta ou se houver feedback (acerto/erro)
+    if (isTimedMode && timeLeft > 0 && !showExplanation && !feedback) {
       const timer = setInterval(() => {
         setTimeLeft(p => {
           if (p <= 0.1) {
             if (gameState === GameState.PLAYING) {
               setGameState(GameState.GAME_OVER);
+            } else if (gameState === GameState.TRAINING && timedTraining) {
+              // No modo treino com tempo, se acabar o tempo tratamos como erro
+              handleTimeOut();
             }
             return 0;
           }
@@ -193,7 +196,22 @@ const App: React.FC = () => {
       }, 100);
       return () => clearInterval(timer);
     }
-  }, [gameState, timeLeft, showExplanation, timedTraining]);
+  }, [gameState, timeLeft, showExplanation, timedTraining, feedback]);
+
+  const handleTimeOut = () => {
+    if (!currentQuestion || feedback) return;
+    audioService.playError();
+    setFeedback('wrong');
+    setIsFlashing(true);
+    setTimeout(() => setIsFlashing(false), 500);
+
+    setIsLoadingAI(true);
+    aiService.explainError(currentQuestion.text, currentQuestion.answer, "Tempo Esgotado")
+      .then(explanation => {
+        setAiExplanation(explanation);
+        setIsLoadingAI(false);
+      });
+  };
 
   return (
     <div className="h-[100dvh] w-screen bg-background text-slate-100 flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary/30">
@@ -232,7 +250,7 @@ const App: React.FC = () => {
             showExplanation={showExplanation} setShowExplanation={setShowExplanation}
             visibleSteps={visibleSteps} isFlashing={isFlashing} nextQ={nextQ}
             aiExplanation={aiExplanation} isLoadingAI={isLoadingAI}
-            successMessage={successMessage}
+            successMessage={successMessage} timedTraining={timedTraining}
           />
         )}
 

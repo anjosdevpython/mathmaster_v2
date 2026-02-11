@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { GameState, GameStats, Question } from '../types';
+import { LEVELS } from '../constants';
 import { TutorialOverlay } from '../components/TutorialOverlay';
 import { audioService } from '../services/audioService';
 
@@ -21,12 +22,14 @@ interface GameViewProps {
     aiExplanation: string | null;
     isLoadingAI: boolean;
     successMessage: string | null;
+    timedTraining?: boolean;
 }
 
 export const GameView: React.FC<GameViewProps> = ({
-    gameState, stats, currentQuestion, timeLeft, userInput, setUserInput, handleSubmit,
-    feedback, setGameState, showExplanation, setShowExplanation, visibleSteps, isFlashing, nextQ,
-    aiExplanation, isLoadingAI, successMessage
+    gameState, stats, currentQuestion, timeLeft, userInput, setUserInput,
+    handleSubmit, feedback, setGameState, showExplanation, setShowExplanation,
+    visibleSteps, isFlashing, nextQ, aiExplanation, isLoadingAI, successMessage,
+    timedTraining
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const isTraining = gameState === GameState.TRAINING;
@@ -50,18 +53,20 @@ export const GameView: React.FC<GameViewProps> = ({
 
     // Alerta sonoro aos 5 segundos
     useEffect(() => {
-        if (!isTraining && timeLeft <= 5 && timeLeft > 4.9 && !hasPlayedWarning) {
+        const shouldAlert = (!isTraining || timedTraining) && timeLeft <= 5 && timeLeft > 4.9 && !hasPlayedWarning;
+        if (shouldAlert) {
             audioService.playTimeWarning();
             setHasPlayedWarning(true);
         }
         if (timeLeft > 5) {
             setHasPlayedWarning(false);
         }
-    }, [timeLeft, isTraining, hasPlayedWarning]);
+    }, [timeLeft, isTraining, timedTraining, hasPlayedWarning]);
 
     // Tick-tock nos últimos 3 segundos
     useEffect(() => {
-        if (!isTraining && timeLeft <= 3 && timeLeft > 0) {
+        const shouldTick = (!isTraining || timedTraining) && timeLeft <= 3 && timeLeft > 0;
+        if (shouldTick) {
             if (!isTickTocking) {
                 setIsTickTocking(true);
                 const interval = setInterval(() => {
@@ -75,7 +80,7 @@ export const GameView: React.FC<GameViewProps> = ({
         } else {
             setIsTickTocking(false);
         }
-    }, [timeLeft, isTraining, isTickTocking]);
+    }, [timeLeft, isTraining, timedTraining, isTickTocking]);
 
     useEffect(() => {
         if (!feedback && !showExplanation) {
@@ -112,7 +117,7 @@ export const GameView: React.FC<GameViewProps> = ({
                             </span>
                         </div>
                     </div>
-                    {!isTraining && (
+                    {(!isTraining || timedTraining) && (
                         <div className="flex flex-col items-end">
                             <span className="text-[9px] uppercase tracking-widest text-primary font-bold">Tempo</span>
                             <div className={`flex items-center gap-1 tabular-nums transition-all duration-300 ${timeLeft <= 3 ? 'text-red-500 animate-pulse scale-110' :
@@ -129,11 +134,11 @@ export const GameView: React.FC<GameViewProps> = ({
                 </div>
 
                 {/* Progress Bar */}
-                {!isTraining && (
+                {(!isTraining || timedTraining) && (
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-primary transition-all duration-500 shadow-[0_0_10px_#22d3ee]"
-                            style={{ width: `${progress}%` }}
+                            style={{ width: `${isTraining ? (timeLeft / (LEVELS[stats.currentLevel - 1]?.timePerQuestion || 10)) * 100 : progress}%` }}
                         />
                     </div>
                 )}
@@ -185,9 +190,9 @@ export const GameView: React.FC<GameViewProps> = ({
                             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                             placeholder="?"
                             className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' :
-                                    timeLeft <= 3 ? 'border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.3)]' :
-                                        timeLeft <= 5 ? 'border-orange-400/40' :
-                                            getStreakBorder()
+                                timeLeft <= 3 ? 'border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.3)]' :
+                                    timeLeft <= 5 ? 'border-orange-400/40' :
+                                        getStreakBorder()
                                 } rounded-2xl p-4 py-10 text-6xl sm:text-7xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
                             autoFocus
                         />
