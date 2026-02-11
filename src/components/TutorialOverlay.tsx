@@ -84,8 +84,23 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
 
-                            <div className={`font-sans leading-relaxed text-slate-100 ${aiExplanation ? 'text-base font-medium' : 'text-lg font-semibold'}`}>
-                                {steps[stepIndex]}
+                            <div className={`font-sans leading-relaxed text-slate-100 ${aiExplanation ? 'text-base' : 'text-lg font-semibold'}`}>
+                                {aiExplanation ? (
+                                    <div className="space-y-4 whitespace-pre-wrap">
+                                        {steps[stepIndex].split(/(\[[^\]]+\])/g).map((part, i) => {
+                                            if (part.startsWith('[') && part.endsWith(']')) {
+                                                return (
+                                                    <div key={i} className="text-primary font-display font-black text-xs tracking-[0.2em] uppercase mt-6 mb-2 first:mt-0 pb-1 border-b border-primary/10">
+                                                        {part.slice(1, -1)}
+                                                    </div>
+                                                );
+                                            }
+                                            return <span key={i} className="text-slate-200">{part}</span>;
+                                        })}
+                                    </div>
+                                ) : (
+                                    steps[stepIndex]
+                                )}
                             </div>
 
                             {aiExplanation && (

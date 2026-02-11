@@ -112,7 +112,7 @@ const App: React.FC = () => {
       const totalPoints = BASE_CORRECT_POINTS + streakBonus;
 
       audioService.playSuccess(stats.streak);
-      const messages = ["EXCELENTE!", "INCRÍVEL!", "CÁLCULO PERFEITO!", "MANDOU BEM!", "FANTÁSTICO!", "GÊNIO!", "ESTRATÉGICO!", "PRECISO!"];
+      const messages = ["EXCELENTE, JOGADOR(A)!", "INCRÍVEL PERFORMANCE!", "CÁLCULO PERFEITO!", "MANDOU BEM!", "FANTÁSTICO!", "GÊNIO(A)!", "ESTRATÉGICO(A)!", "PRECISÃO TOTAL!"];
       setSuccessMessage(stats.streak >= 2 ? `${messages[Math.floor(Math.random() * messages.length)]} COMBO x${stats.streak + 1}` : messages[Math.floor(Math.random() * messages.length)]);
       setFeedback('correct');
 
@@ -290,8 +290,8 @@ const App: React.FC = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
                 <span className="material-symbols-outlined text-primary text-4xl">emoji_events</span>
               </div>
-              <h1 className="text-3xl font-display font-black tracking-tighter text-white uppercase">Setor Concluído</h1>
-              <p className="text-xs text-slate-400 font-medium">Excelente performance neural!</p>
+              <h1 className="text-3xl font-display font-black tracking-tighter text-white uppercase">Missão Cumprida</h1>
+              <p className="text-xs text-slate-400 font-medium">Jogador(a), sua performance neural foi excepcional!</p>
             </div>
 
             <div className="w-full bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
