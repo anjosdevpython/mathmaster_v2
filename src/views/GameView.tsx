@@ -134,7 +134,7 @@ export const GameView: React.FC<GameViewProps> = ({
                             onChange={(e) => setUserInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                             placeholder="?"
-                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-[2rem] p-4 py-6 text-5xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10`}
+                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-[2rem] p-4 py-6 text-5xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
                             autoFocus
                         />
                         <button
