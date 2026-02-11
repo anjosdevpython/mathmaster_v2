@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameState } from '../types';
 import { LEVELS } from '../constants';
 
@@ -9,139 +9,140 @@ interface LevelSelectViewProps {
 }
 
 const LEVEL_ICONS = [
-    "fa-user", "fa-user-graduate", "fa-book-reader", "fa-user-secret", "fa-jet-fighter", // 1-5
-    "fa-user-ninja", "fa-khanda", "fa-scroll", "fa-hat-wizard", "fa-medal", // 6-10
-    "fa-dumbbell", "fa-robot", "fa-fire", "fa-dragon", "fa-chess-king", // 11-15
-    "fa-atom", "fa-balance-scale", "fa-globe-americas", "fa-meteor", "fa-sun", // 16-20
-    "fa-microchip", "fa-network-wired", "fa-eye", "fa-infinity", "fa-hourglass-half", // 21-25
-    "fa-trophy", "fa-bolt", "fa-star", "fa-yin-yang", "fa-crown" // 26-30
+    "person", "school", "menu_book", "diversity_3", "rocket", // 1-5
+    "ninja", "swords", "scroll", "auto_fix_high", "military_tech", // 6-10
+    "fitness_center", "robot", "local_fire_department", "pets", "workspace_premium", // 11-15
+    "atom", "balance", "public", "comet", "wb_sunny", // 16-20
+    "memory", "hub", "visibility", "all_inclusive", "hourglass_empty", // 21-25
+    "emoji_events", "bolt", "star", "yin_yang", "crown" // 26-30
 ];
 
 export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, startLevel, unlockedLevel }) => {
-    // Estado para controlar qual nível está sendo pré-visualizado (hover) ou o atual desbloqueado
     const [previewLevel, setPreviewLevel] = useState(unlockedLevel);
-
-    // Dados do nível em destaque
     const currentPreview = LEVELS[previewLevel - 1] || LEVELS[0];
-    const currentIcon = LEVEL_ICONS[previewLevel - 1] || "fa-question";
+    const currentIcon = LEVEL_ICONS[previewLevel - 1] || "question_mark";
     const isPreviewUnlocked = previewLevel <= unlockedLevel;
 
-    // Navegação por Teclado
-    React.useEffect(() => {
+    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'ArrowRight') setPreviewLevel(p => Math.min(p + 1, 30));
             if (e.key === 'ArrowLeft') setPreviewLevel(p => Math.max(p - 1, 1));
-            if (e.key === 'ArrowDown') setPreviewLevel(p => Math.min(p + 5, 30)); // Pulando linha (aprox)
+            if (e.key === 'ArrowDown') setPreviewLevel(p => Math.min(p + 5, 30));
             if (e.key === 'ArrowUp') setPreviewLevel(p => Math.max(p - 5, 1));
-            if (e.key === 'Enter') {
-                if (previewLevel <= unlockedLevel) startLevel(previewLevel, true);
-            }
+            if (e.key === 'Enter' && previewLevel <= unlockedLevel) startLevel(previewLevel, true);
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [previewLevel, unlockedLevel, startLevel]);
 
-    // Auto-scroll para manter o item selecionado visível
-    React.useEffect(() => {
+    useEffect(() => {
         const el = document.getElementById(`level-btn-${previewLevel}`);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }, [previewLevel]);
 
     return (
-        <div className="flex flex-col h-full px-6 py-6 animate-pop-in max-w-7xl mx-auto w-full relative z-10 text-white gap-6">
+        <div className="relative z-10 flex flex-col w-full max-w-4xl mx-auto h-full px-6 py-8 gap-8 animate-pop-in">
+            {/* Header */}
+            <header className="flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setGameState(GameState.HOME)}
+                        className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-900/40 border border-slate-800/50 hover:bg-slate-800 transition-all text-primary"
+                    >
+                        <span className="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <div>
+                        <h2 className="text-2xl font-display font-black tracking-tighter text-white">SELEÇÃO DE SETOR</h2>
+                        <p className="text-[10px] font-display font-medium text-slate-500 uppercase tracking-widest">Protocolo de Ascensão Neural</p>
+                    </div>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full">
+                    <span className="text-[10px] font-display font-bold text-primary uppercase">Progresso Total:</span>
+                    <span className="text-sm font-display font-black text-white">{Math.round((unlockedLevel / 30) * 100)}%</span>
+                </div>
+            </header>
 
-            {/* Header / Nav */}
-            <div className="flex items-center gap-4 shrink-0">
-                <button
-                    onClick={() => setGameState(GameState.HOME)}
-                    className="w-10 h-10 flex items-center justify-center rounded-tech bg-surfaceLight hover:bg-white/10 transition-all border border-white/10"
-                >
-                    <i className="fas fa-chevron-left text-primary" />
-                </button>
-                <h2 className="text-2xl font-display font-bold">ESCOLHA UM NÍVEL</h2>
-            </div>
+            <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+                {/* Level Detail Panel */}
+                <div className="w-full lg:w-80 flex flex-col bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] p-8 items-center justify-between text-center shrink-0 shadow-2xl relative overflow-hidden">
+                    <div className={`absolute inset-0 bg-gradient-to-b ${isPreviewUnlocked ? 'from-primary/5' : 'from-red-500/5'} to-transparent opacity-50`} />
 
-            <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
+                    <div className="z-10 w-full flex flex-col items-center">
+                        <div className={`relative mb-8 transition-all duration-500 ${isPreviewUnlocked ? 'scale-110' : 'grayscale opacity-30 scale-100'}`}>
+                            <div className={`absolute inset-0 blur-3xl rounded-full transform scale-150 animate-pulse ${isPreviewUnlocked ? 'bg-primary/20' : 'bg-red-500/10'}`} />
+                            <span className={`material-symbols-outlined text-8xl ${isPreviewUnlocked ? 'text-white glow-text' : 'text-slate-600'}`}>
+                                {isPreviewUnlocked ? currentIcon : 'lock'}
+                            </span>
+                        </div>
 
-                {/* Lado Esquerdo: Destaque do Personagem (Hidden on small mobile, visible on larger screens) */}
-                <div className="hidden md:flex md:w-5/12 lg:w-1/3 flex-col panel-glass p-6 lg:p-8 items-center justify-center text-center relative overflow-hidden transition-all duration-300 border-primary/20 shrink-0">
-                    <div className={`absolute inset-0 bg-gradient-to-b ${isPreviewUnlocked ? 'from-primary/5 to-transparent' : 'from-red-500/5 to-transparent'} pointer-events-none`} />
-
-                    {/* Avatar Grande */}
-                    <div className={`relative mb-6 transition-transform duration-500 ${isPreviewUnlocked ? 'scale-100' : 'grayscale opacity-50'}`}>
-                        <div className="absolute inset-0 blur-3xl bg-primary/20 rounded-full transform scale-150 animate-pulse-slow"></div>
-                        <i className={`fas ${currentIcon} text-8xl lg:text-9xl drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] ${isPreviewUnlocked ? 'text-white' : 'text-white/20'}`} />
+                        <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight mb-1">{currentPreview.name}</h3>
+                        <div className="text-primary font-display font-bold text-xs tracking-[0.2em] mb-8">SETOR {currentPreview.level.toString().padStart(2, '0')}</div>
                     </div>
 
-                    <h1 className="text-3xl lg:text-4xl font-black font-display mb-2 uppercase tracking-wide break-words w-full">{currentPreview.name}</h1>
-                    <div className="text-primary font-mono font-bold text-xl mb-6">NÍVEL {currentPreview.level}</div>
-
-                    {isPreviewUnlocked ? (
-                        <div className="space-y-4 w-full max-w-xs">
-                            <div className="flex justify-between text-xs font-mono border-b border-white/10 pb-2">
-                                <span className="text-white/50">TEMPO</span>
-                                <span className="text-white">{currentPreview.timePerQuestion}s / pergunta</span>
-                            </div>
-                            <div className="flex justify-between text-xs font-mono border-b border-white/10 pb-2">
-                                <span className="text-white/50">MISSÃO</span>
-                                <span className="text-white">{currentPreview.totalQuestions} Fases</span>
-                            </div>
-                            <div className="flex justify-between text-xs font-mono border-b border-white/10 pb-2">
-                                <span className="text-white/50">OPERAÇÕES</span>
-                                <div className="flex gap-2 text-accent">
-                                    {currentPreview.operations.map(op => (
-                                        <span key={op}>{op === 'fraction' ? '%' : op}</span>
-                                    ))}
+                    <div className="z-10 w-full space-y-3">
+                        {isPreviewUnlocked ? (
+                            <>
+                                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span className="text-[10px] font-display font-bold text-slate-500 uppercase">Tempo</span>
+                                    <span className="text-xs font-display font-black text-white">{currentPreview.timePerQuestion}S</span>
                                 </div>
+                                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span className="text-[10px] font-display font-bold text-slate-500 uppercase">Fases</span>
+                                    <span className="text-xs font-display font-black text-white">{currentPreview.totalQuestions}</span>
+                                </div>
+                                <button
+                                    onClick={() => startLevel(currentPreview.level, true)}
+                                    className="w-full h-14 stitch-btn stitch-btn-primary mt-4"
+                                >
+                                    ASSUMIR COMANDO
+                                </button>
+                            </>
+                        ) : (
+                            <div className="flex flex-col items-center gap-3 py-6 px-4 border border-red-500/20 bg-red-500/5 rounded-2xl">
+                                <span className="material-symbols-outlined text-red-500">lock</span>
+                                <span className="text-[10px] font-display font-black text-red-500 uppercase tracking-widest text-center">
+                                    Acesso Bloqueado. Conclua o setor anterior.
+                                </span>
                             </div>
-                            <button
-                                onClick={() => startLevel(currentPreview.level, true)}
-                                className="w-full btn-primary mt-4 py-4"
-                            >
-                                JOGAR AGORA <i className="fas fa-play ml-2" />
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2 text-danger font-mono text-sm border border-danger/30 p-4 rounded-tech bg-danger/5">
-                            <i className="fas fa-lock" /> ACESSO RESTRITO
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
-                {/* Lado Direito: Grid de Níveis */}
-                <div className="flex-1 overflow-y-auto no-scrollbar pr-2 pb-32 md:pb-0">
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {/* Grid Container */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 pb-20 lg:pb-0">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-4">
                         {LEVELS.map((lvl, index) => {
                             const isUnlocked = lvl.level <= unlockedLevel;
                             const isSelected = lvl.level === previewLevel;
-                            const icon = LEVEL_ICONS[index] || "fa-question";
+                            const icon = LEVEL_ICONS[index] || "question_mark";
 
                             return (
                                 <button
                                     key={lvl.level}
                                     id={`level-btn-${lvl.level}`}
-                                    disabled={!isUnlocked && false}
                                     onClick={() => {
                                         setPreviewLevel(lvl.level);
-                                        // Apenas inicia o jogo se estiver desbloqueado
                                         if (isUnlocked) startLevel(lvl.level, true);
                                     }}
                                     onMouseEnter={() => setPreviewLevel(lvl.level)}
-                                    className={`aspect-square rounded-tech flex flex-col items-center justify-center transition-all border relative group
-                                    ${isSelected
-                                            ? 'bg-primary border-primary text-background shadow-glow-primary z-10 md:scale-105'
+                                    className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 border-2 relative group active:scale-90
+                                        ${isSelected
+                                            ? 'border-primary bg-primary/20 text-white shadow-neon scale-105 z-10'
                                             : isUnlocked
-                                                ? 'bg-surfaceLight/30 border-white/5 text-white hover:bg-surfaceLight hover:border-white/20'
-                                                : 'bg-black/40 border-white/5 text-white/5 grayscale'}`}
+                                                ? 'border-slate-800 bg-slate-900/40 text-slate-400 hover:border-primary/50 hover:bg-slate-800/60 hover:text-white'
+                                                : 'border-slate-900 bg-slate-950/40 text-slate-700 grayscale opacity-40'}`}
                                 >
-                                    <i className={`fas ${icon} text-lg md:text-xl mb-1 ${isSelected ? 'animate-bounce' : ''}`} />
-                                    <span className={`text-base md:text-lg font-bold font-display leading-none`}>{lvl.level}</span>
-                                    <div className={`text-[6px] md:text-[7px] uppercase font-mono tracking-widest mt-1 max-w-[90%] truncate ${isSelected ? 'text-black/80 font-bold' : 'text-white/40'}`}>
+                                    <span className={`material-symbols-outlined text-2xl mb-1 ${isSelected ? 'animate-bounce' : 'group-hover:translate-y-[-2px] transition-transform'}`}>
+                                        {isUnlocked ? icon : 'lock'}
+                                    </span>
+                                    <span className="text-lg font-display font-black leading-none">{lvl.level}</span>
+                                    <div className={`text-[7px] uppercase font-display font-bold tracking-widest mt-1 max-w-[80%] truncate ${isSelected ? 'text-primary' : 'text-slate-500'}`}>
                                         {lvl.name}
                                     </div>
-                                    {!isUnlocked && <div className="absolute top-1 right-2"><i className="fas fa-lock text-[8px]" /></div>}
+
+                                    {isUnlocked && !isSelected && (
+                                        <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                                    )}
                                 </button>
                             );
                         })}
@@ -151,4 +152,3 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
         </div>
     );
 };
-

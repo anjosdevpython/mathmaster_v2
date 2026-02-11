@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MathMaster Minimalist Tech Style</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .tech-gradient {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+        }
+        .fine-line {
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display selection:bg-primary/30">
+<div class="max-w-[430px] mx-auto min-h-screen flex flex-col relative overflow-hidden bg-background-light dark:bg-background-dark">
+<!-- Top Status Bar (Electric Blue Accent Line) -->
+<div class="h-1 bg-primary w-2/3 absolute top-0 left-0 transition-all duration-500 ease-out"></div>
+<!-- HUD Header -->
+<header class="pt-12 px-6 pb-6 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-icons-round text-primary text-sm">bolt</span>
+<span class="text-[10px] tracking-[0.2em] font-semibold uppercase text-slate-500">Neural Sync: Active</span>
+</div>
+<div class="flex gap-4">
+<span class="material-icons-round text-slate-500 text-lg">pause</span>
+<span class="material-icons-round text-slate-500 text-lg">settings</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-0.5 fine-line rounded-lg bg-white/5 overflow-hidden">
+<div class="flex flex-col items-center py-2 border-r border-white/10 tech-gradient">
+<span class="text-[9px] uppercase tracking-tighter text-slate-500">Level</span>
+<span class="text-sm font-bold">14<span class="text-primary">.02</span></span>
+</div>
+<div class="flex flex-col items-center py-2 border-r border-white/10 tech-gradient">
+<span class="text-[9px] uppercase tracking-tighter text-slate-500">Accuracy</span>
+<span class="text-sm font-bold">98.4%</span>
+</div>
+<div class="flex flex-col items-center py-2 tech-gradient">
+<span class="text-[9px] uppercase tracking-tighter text-slate-500">Latency</span>
+<span class="text-sm font-bold">142ms</span>
+</div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="flex-grow flex flex-col justify-center px-8 relative">
+<!-- Background Geometry -->
+<div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+<div class="w-64 h-64 border border-white rounded-full"></div>
+<div class="absolute w-48 h-48 border border-white rounded-full"></div>
+<div class="absolute w-full h-[0.5px] bg-white"></div>
+<div class="absolute h-full w-[0.5px] bg-white"></div>
+</div>
+<div class="text-center relative z-10">
+<div class="flex flex-col gap-2 items-center">
+<span class="text-primary text-[10px] tracking-widest font-bold uppercase mb-2">Equation Challenge</span>
+<h1 class="text-6xl font-light tracking-tight text-white flex items-center gap-4">
+                        42 <span class="text-primary font-bold">×</span> 1.5
+                    </h1>
+<div class="mt-8 flex items-center gap-2">
+<div class="h-10 w-24 border-b-2 border-primary/50 flex items-center justify-center text-3xl font-medium text-white tracking-widest">
+<span class="opacity-30">_</span><span class="opacity-30">_</span><span class="opacity-30">_</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Sparkline visualization of performance -->
+<div class="mt-12 w-full h-8 flex items-end gap-1 px-4 opacity-40">
+<div class="flex-1 bg-primary/20 h-4 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-6 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/40 h-3 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/60 h-8 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-5 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/30 h-7 rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-4 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-2 rounded-t-sm"></div>
+</div>
+</main>
+<!-- Numeric Keypad -->
+<section class="p-6 bg-white/5 backdrop-blur-md rounded-t-xl border-t border-white/10">
+<div class="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+<!-- Row 1 -->
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">1</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">2</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">3</span>
+</button>
+<!-- Row 2 -->
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">4</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">5</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">6</span>
+</button>
+<!-- Row 3 -->
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">7</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">8</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">9</span>
+</button>
+<!-- Row 4 -->
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">.</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 hover:bg-primary/10 active:bg-primary transition-all group">
+<span class="text-xl font-medium group-active:text-white">0</span>
+</button>
+<button class="h-16 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 active:bg-red-500/50 transition-all group">
+<span class="material-icons-round text-slate-400 group-active:text-white">backspace</span>
+</button>
+</div>
+<!-- Footer Meta -->
+<div class="mt-6 flex justify-between items-center px-2">
+<div class="flex flex-col">
+<span class="text-[8px] uppercase tracking-widest text-slate-500">Processor</span>
+<span class="text-[10px] font-mono text-primary/80">CORE_V3.82</span>
+</div>
+<div class="flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[8px] uppercase tracking-widest text-slate-500">Session ID</span>
+<span class="text-[10px] font-mono text-slate-400">#AF92-K0</span>
+</div>
+</div>
+</section>
+<!-- Subtle Background Decorative Image -->
+<div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+</div>
+</body></html>

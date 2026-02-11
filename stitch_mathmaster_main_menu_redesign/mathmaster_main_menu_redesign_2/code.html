@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MathMaster - Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&amp;family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#10B981",
+                        "background-dark": "#020617",
+                        "surface-dark": "#0f172a",
+                        "neon-cyan": "#22d3ee",
+                    },
+                    fontFamily: {
+                        display: ["Orbitron", "sans-serif"],
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px -5px rgba(16, 185, 129, 0.6), 0 4px 6px -2px rgba(16, 185, 129, 0.3)',
+                        'neon-inner': 'inset 0 0 10px rgba(16, 185, 129, 0.3)',
+                    }
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        .star-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .glow-text {
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
+        }
+        .cyber-grid {
+            background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .gradient-button {
+            background: linear-gradient(135deg, #10B981 0%, #06b6d4 100%);
+        }
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-sans text-slate-100 flex flex-col overflow-hidden selection:bg-primary/30">
+<div class="fixed inset-0 pointer-events-none star-bg z-0"></div>
+<div class="fixed inset-0 pointer-events-none cyber-grid z-0 opacity-20"></div>
+<div class="fixed top-1/4 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-1/4 -right-20 w-64 h-64 bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none"></div>
+<main class="relative z-10 flex flex-col w-full max-w-md mx-auto h-screen px-8 py-12 justify-between items-center text-center">
+<header class="w-full">
+<div class="flex flex-col items-center justify-center space-y-4">
+<div class="relative inline-block">
+<h1 class="font-display font-900 text-4xl tracking-tighter flex items-center justify-center">
+<span class="text-white">MATH</span>
+<span class="text-primary glow-text">MASTER</span>
+</h1>
+</div>
+<p class="text-[10px] tracking-[0.3em] font-display font-medium text-slate-400 uppercase">
+                    Matemática Mental de Alta Performance
+                </p>
+</div>
+</header>
+<div class="w-full flex flex-col items-center justify-center flex-grow py-8">
+<div class="w-full bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 p-8 rounded-[2.5rem] shadow-2xl">
+<div class="grid grid-cols-4 gap-4 aspect-square max-w-[280px] mx-auto content-center">
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-primary/40 bg-primary/10 rounded-2xl transition-all active:scale-90 group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110">add</span>
+<span class="text-[8px] font-display font-bold text-primary tracking-widest">SOMA</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-primary/40 bg-primary/10 rounded-2xl transition-all active:scale-90 group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110">remove</span>
+<span class="text-[8px] font-display font-bold text-primary tracking-widest">SUB</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-primary/40 bg-primary/10 rounded-2xl transition-all active:scale-90 group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110">close</span>
+<span class="text-[8px] font-display font-bold text-primary tracking-widest">MULT</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-primary/40 bg-primary/10 rounded-2xl transition-all active:scale-90 group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110">percent</span>
+<span class="text-[8px] font-display font-bold text-primary tracking-widest">DIV</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-slate-700/50 bg-slate-800/40 rounded-2xl transition-all active:scale-90 group">
+<span class="text-slate-400 font-display font-black text-sm mb-1">X²</span>
+<span class="text-[8px] font-display font-bold text-slate-500 tracking-widest">POT</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-slate-700/50 bg-slate-800/40 rounded-2xl transition-all active:scale-90 group">
+<span class="material-symbols-outlined text-slate-400 mb-1 group-hover:text-white">square_foot</span>
+<span class="text-[8px] font-display font-bold text-slate-500 tracking-widest">RAIZ</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center border-2 border-slate-700/50 bg-slate-800/40 rounded-2xl transition-all active:scale-90 group">
+<span class="material-symbols-outlined text-slate-400 mb-1 group-hover:text-white">auto_graph</span>
+<span class="text-[8px] font-display font-bold text-slate-500 tracking-widest">LOG</span>
+</button>
+<button class="aspect-square flex items-center justify-center border-2 border-slate-800/20 bg-slate-900/20 rounded-2xl opacity-40">
+<span class="material-symbols-outlined text-slate-700 text-sm">lock</span>
+</button>
+</div>
+</div>
+</div>
+<div class="w-full space-y-4 max-w-sm px-4">
+<button class="w-full h-16 gradient-button rounded-2xl shadow-neon flex items-center justify-center space-x-3 transition-transform active:scale-95">
+<span class="font-display font-bold text-lg text-white tracking-[0.15em]">COMEÇAR JOGO</span>
+<span class="material-symbols-outlined text-white text-2xl">play_arrow</span>
+</button>
+<button class="w-full h-16 bg-slate-900/40 border-2 border-slate-800 rounded-2xl flex items-center justify-center space-x-3 transition-all hover:bg-slate-800/60 active:scale-95">
+<span class="font-display font-bold text-base text-slate-300 tracking-[0.15em]">MODO TREINO</span>
+<span class="material-symbols-outlined text-slate-400 text-xl">fitness_center</span>
+</button>
+</div>
+<footer class="mt-8 pt-6 border-t border-slate-800/30 w-full">
+<p class="text-[9px] tracking-[0.25em] font-display text-slate-500">
+                SISTEMA OPERACIONAL <span class="text-neon-cyan">V 2.0.4</span>
+</p>
+</footer>
+</main>
+<div class="fixed top-12 right-6 z-20">
+<button class="w-10 h-10 rounded-full border border-slate-700 bg-slate-800/50 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-slate-400 text-xl">person</span>
+</button>
+</div>
+
+</body></html>

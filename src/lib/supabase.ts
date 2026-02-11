@@ -7,9 +7,10 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 let client: SupabaseClient;
 
 if (supabaseUrl && supabaseAnonKey) {
+    console.log('[Supabase] Credenciais detectadas. Inicializando cliente...');
     client = createClient(supabaseUrl, supabaseAnonKey);
 } else {
-    console.warn('⚠️ Supabase credentials missing! Cloud features disabled.');
+    console.error('[Supabase] ERRO: Credenciais VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY ausentes no .env!');
     // Mock client seguro para evitar crash
     client = {
         auth: {

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>MathMaster - Treinamento Mental</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen antialiased flex flex-col">
+<!-- iOS Status Bar Spacer (For Notch) -->
+<div class="h-12 w-full"></div>
+<!-- PWA Style Progress Bar -->
+<div class="fixed top-0 left-0 w-full h-1 bg-slate-200 dark:bg-slate-800 z-50">
+<div class="h-full bg-primary w-1/4 shadow-[0_0_8px_rgba(13,89,242,0.5)]"></div>
+</div>
+<!-- Header Navigation -->
+<header class="px-6 py-4 flex justify-between items-center w-full max-w-md mx-auto">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-sm text-slate-500">
+<span class="material-icons">close</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Modo</span>
+<span class="text-sm font-semibold text-primary">Multiplicação</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-sm text-slate-500">
+<span class="material-icons text-xl">pause</span>
+</button>
+</header>
+<!-- Stats Dashboard -->
+<div class="px-6 mt-4 w-full max-w-md mx-auto grid grid-cols-2 gap-4">
+<div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm p-3 rounded-lg border border-white dark:border-slate-700 flex flex-col">
+<span class="text-[11px] font-bold text-slate-400 uppercase">Questão</span>
+<span class="text-xl font-bold text-slate-800 dark:text-white">05<span class="text-slate-300 dark:text-slate-600">/20</span></span>
+</div>
+<div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm p-3 rounded-lg border border-white dark:border-slate-700 flex flex-col">
+<span class="text-[11px] font-bold text-slate-400 uppercase">Pontuação</span>
+<span class="text-xl font-bold text-primary">450</span>
+</div>
+</div>
+<!-- Main Gameplay Area -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 py-8 w-full max-w-md mx-auto">
+<!-- Question Card -->
+<div class="w-full bg-white dark:bg-slate-800 rounded-xl shadow-xl shadow-primary/5 border border-slate-100 dark:border-slate-700 p-10 mb-10 flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Subtle background pattern -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary rounded-full -mr-16 -mt-16"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 bg-primary rounded-full -ml-12 -mb-12"></div>
+</div>
+<span class="text-primary font-bold text-sm mb-4 bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">Calcule agora</span>
+<h1 class="text-6xl font-bold tracking-tight text-slate-800 dark:text-white">
+                25 <span class="text-primary">×</span> 4
+            </h1>
+</div>
+<!-- Answer Options -->
+<div class="w-full grid grid-cols-2 gap-4">
+<!-- Option 1 -->
+<button class="group relative bg-white dark:bg-slate-800 border-2 border-transparent active:border-primary hover:border-primary/50 py-6 rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center overflow-hidden">
+<span class="text-2xl font-bold text-slate-700 dark:text-slate-200 group-active:text-primary">80</span>
+<div class="absolute bottom-0 left-0 h-1 w-0 bg-primary transition-all duration-300 group-active:w-full"></div>
+</button>
+<!-- Option 2 -->
+<button class="group relative bg-white dark:bg-slate-800 border-2 border-transparent active:border-primary hover:border-primary/50 py-6 rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center overflow-hidden">
+<span class="text-2xl font-bold text-slate-700 dark:text-slate-200 group-active:text-primary">90</span>
+<div class="absolute bottom-0 left-0 h-1 w-0 bg-primary transition-all duration-300 group-active:w-full"></div>
+</button>
+<!-- Option 3 (Correct State Hint) -->
+<button class="group relative bg-white dark:bg-slate-800 border-2 border-primary py-6 rounded-lg shadow-md shadow-primary/10 transition-all duration-200 flex items-center justify-center overflow-hidden">
+<span class="text-2xl font-bold text-primary">100</span>
+<div class="absolute bottom-0 left-0 h-1 w-full bg-primary"></div>
+</button>
+<!-- Option 4 -->
+<button class="group relative bg-white dark:bg-slate-800 border-2 border-transparent active:border-primary hover:border-primary/50 py-6 rounded-lg shadow-sm transition-all duration-200 flex items-center justify-center overflow-hidden">
+<span class="text-2xl font-bold text-slate-700 dark:text-slate-200 group-active:text-primary">110</span>
+<div class="absolute bottom-0 left-0 h-1 w-0 bg-primary transition-all duration-300 group-active:w-full"></div>
+</button>
+</div>
+</main>
+<!-- Bottom Action/Timer -->
+<footer class="px-6 pb-10 w-full max-w-md mx-auto">
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-widest px-1">
+<span>Tempo restante</span>
+<span class="text-slate-600 dark:text-slate-300">0:12</span>
+</div>
+<div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-2/3"></div>
+</div>
+</div>
+</footer>
+<!-- iOS Home Indicator Spacer -->
+<div class="h-8 w-full"></div>
+<!-- Background Decorative Elements -->
+<div class="fixed -z-10 top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[50%] h-[30%] bg-primary/5 blur-[100px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[30%] bg-primary/5 blur-[100px] rounded-full"></div>
+</div>
+</body></html>

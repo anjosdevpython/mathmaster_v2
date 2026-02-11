@@ -1,18 +1,19 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { GameState, GameStats, Question } from './types';
 import { LEVELS, INITIAL_LIVES, BASE_CORRECT_POINTS } from './constants';
 import { generateQuestion } from './services/mathGenerator';
 import { audioService } from './services/audioService';
-import ParticleBackground from './components/ParticleBackground';
 import { HomeView } from './views/HomeView';
 import { LevelSelectView } from './views/LevelSelectView';
 import { GameView } from './views/GameView';
-import { supabase } from './lib/supabase';
 import { PersistenceService } from './services/persistence';
+import { aiService } from './services/aiService';
+import { supabase } from './lib/supabase';
+import confetti from 'canvas-confetti';
 
 const App: React.FC = () => {
-  useEffect(() => { console.log("MathMaster v2.2.1 - Force Sync Fix"); }, []);
+  useEffect(() => { console.log("MathMaster Redesign v3.0.0 - Neural Sync"); }, []);
+
   const [gameState, setGameState] = useState<GameState>(GameState.HOME);
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [stats, setStats] = useState<GameStats>({
@@ -32,6 +33,9 @@ const App: React.FC = () => {
   const [visibleSteps, setVisibleSteps] = useState<number>(0);
   const [isFlashing, setIsFlashing] = useState(false);
   const [selectedOps, setSelectedOps] = useState<string[]>(['+', '-', '*', '/']);
+  const [aiExplanation, setAiExplanation] = useState<string | null>(null);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const data = PersistenceService.load();
@@ -57,6 +61,8 @@ const App: React.FC = () => {
     setUserInput('');
     setFeedback(null);
     setShowExplanation(false);
+    setAiExplanation(null);
+    setIsLoadingAI(false);
     setVisibleSteps(0);
   }, [selectedOps, stats.score]);
 
@@ -65,13 +71,9 @@ const App: React.FC = () => {
     const config = LEVELS[stats.currentLevel - 1] || LEVELS[0];
 
     if (!isTraining && stats.currentQuestionIndex + 1 >= config.totalQuestions) {
-      // Level Complete
       const nextLevel = stats.currentLevel + 1;
-
-      // Persist Progress
       PersistenceService.updateLevel(nextLevel);
       PersistenceService.updateScore(stats.currentLevel, stats.score);
-
       setUnlockedLevel(p => Math.max(p, nextLevel));
       setGameState(GameState.LEVEL_COMPLETE);
     } else {
@@ -82,6 +84,8 @@ const App: React.FC = () => {
       setUserInput('');
       setFeedback(null);
       setShowExplanation(false);
+      setAiExplanation(null);
+      setIsLoadingAI(false);
       setVisibleSteps(0);
     }
   }, [stats, gameState, selectedOps]);
@@ -92,61 +96,56 @@ const App: React.FC = () => {
 
     if (parseFloat(userInput) === currentQuestion.answer) {
       audioService.playSuccess();
+      const messages = ["EXCELENTE!", "INCRÍVEL!", "CÁLCULO PERFEITO!", "MANDOU BEM!", "FANTÁSTICO!", "GÊNIO!", "ESTRATÉGICO!", "PRECISO!"];
+      setSuccessMessage(messages[Math.floor(Math.random() * messages.length)]);
       setFeedback('correct');
+
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#10b981', '#22d3ee', '#ffffff']
+      });
+
       if (gameState !== GameState.TRAINING) {
         setStats(p => ({ ...p, score: p.score + BASE_CORRECT_POINTS, correctInLevel: p.correctInLevel + 1 }));
       } else {
         setStats(p => ({ ...p, correctInLevel: p.correctInLevel + 1 }));
       }
-      setTimeout(nextQ, 800);
+
+      setTimeout(() => {
+        setSuccessMessage(null);
+        nextQ();
+      }, 1000);
     } else {
       audioService.playError();
       setFeedback('wrong');
       setIsFlashing(true);
       setTimeout(() => setIsFlashing(false), 500);
 
+      setIsLoadingAI(true);
+      aiService.explainError(currentQuestion.text, currentQuestion.answer, userInput)
+        .then(explanation => {
+          setAiExplanation(explanation);
+          setIsLoadingAI(false);
+        });
+
       if (gameState !== GameState.TRAINING) {
         setStats(p => ({ ...p, lives: p.lives - 1, perfectLevel: false }));
         if (stats.lives <= 1) setGameState(GameState.GAME_OVER);
-        else setTimeout(nextQ, 1500);
       }
     }
   };
 
   useEffect(() => {
-    if (showExplanation && currentQuestion) {
-      const steps = currentQuestion.explanation?.split('|') || [];
-      setVisibleSteps(1);
-      const timer = setInterval(() => {
-        setVisibleSteps(v => v < steps.length ? v + 1 : v);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [showExplanation, currentQuestion]);
-
-  useEffect(() => {
-    // Inicializa persistência
     PersistenceService.init();
-
-    // Atualiza título com nome do usuário
     const updateTitle = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user && user.user_metadata?.username) {
-        document.title = `MathMaster | ${user.user_metadata.username}`;
-      } else {
-        document.title = `MathMaster`;
-      }
+      document.title = user?.user_metadata?.username ? `MathMaster | ${user.user_metadata.username}` : `MathMaster`;
     };
-
-    // Chama inicialmente e ouve mudanças de auth
     updateTitle();
-    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
-      updateTitle();
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => updateTitle());
+    return () => authListener.subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -162,9 +161,15 @@ const App: React.FC = () => {
   }, [gameState, timeLeft]);
 
   return (
-    <div className="h-full bg-background flex flex-col relative overflow-hidden font-sans text-white">
-      <ParticleBackground />
-      <main className="relative z-10 w-full h-full flex flex-col">
+    <div className="h-screen w-screen bg-background text-slate-100 flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary/30">
+      {/* Redesign Background Layers */}
+      <div className="fixed inset-0 pointer-events-none star-bg z-0 opacity-40"></div>
+      <div className="fixed inset-0 pointer-events-none cyber-grid z-0 opacity-20"></div>
+      <div className="fixed top-1/4 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed bottom-1/4 -right-20 w-64 h-64 bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <main className={`relative z-10 w-full h-full flex flex-col items-center justify-center border-white/5 ${gameState === GameState.LEVEL_SELECT || gameState === GameState.HOME ? 'max-w-7xl' : 'max-w-[430px] border-x'
+        } mx-auto transition-all duration-500`}>
         {gameState === GameState.HOME && (
           <HomeView
             setGameState={setGameState}
@@ -175,11 +180,13 @@ const App: React.FC = () => {
         )}
 
         {gameState === GameState.LEVEL_SELECT && (
-          <LevelSelectView
-            setGameState={setGameState}
-            startLevel={startLevel}
-            unlockedLevel={unlockedLevel}
-          />
+          <div className="w-full h-full px-4 overflow-hidden">
+            <LevelSelectView
+              setGameState={setGameState}
+              startLevel={startLevel}
+              unlockedLevel={unlockedLevel}
+            />
+          </div>
         )}
 
         {(gameState === GameState.PLAYING || gameState === GameState.TRAINING) && (
@@ -189,41 +196,94 @@ const App: React.FC = () => {
             handleSubmit={handleSubmit} feedback={feedback} setGameState={setGameState}
             showExplanation={showExplanation} setShowExplanation={setShowExplanation}
             visibleSteps={visibleSteps} isFlashing={isFlashing} nextQ={nextQ}
+            aiExplanation={aiExplanation} isLoadingAI={isLoadingAI}
+            successMessage={successMessage}
           />
         )}
 
-        {/* Telas de GameOver e LevelComplete ainda inline mas estilizadas com classes novas */}
         {gameState === GameState.GAME_OVER && (
-          <div className="flex flex-col items-center justify-center h-full animate-pop-in px-6 text-center z-10">
-            <div className="panel-glass p-16 max-w-md w-full border border-danger/30 shadow-glow-danger">
-              <i className="fas fa-skull-crossbones text-7xl text-danger mb-8 animate-pulse" />
-              <h1 className="text-6xl font-black font-display text-white mb-2">FALHA NO SISTEMA</h1>
-              <p className="text-white/40 mb-12 font-mono text-sm uppercase">Capacidade Neural Excedida</p>
-              <button onClick={() => setGameState(GameState.HOME)} className="w-full btn-secondary uppercase tracking-widest text-xs">Reiniciar Sistema</button>
+          <div className="flex flex-col items-center justify-center h-full w-full px-8 text-center gap-12 animate-pop-in">
+            <div className="relative">
+              <div className="absolute inset-0 bg-red-500/20 blur-[80px] rounded-full" />
+              <span className="material-symbols-outlined text-9xl text-red-500 relative z-10 animate-pulse">skull</span>
+            </div>
+
+            <div className="space-y-4">
+              <h1 className="text-5xl font-display font-black tracking-tighter text-white">FALHA NO SISTEMA</h1>
+              <p className="text-[10px] tracking-[0.4em] font-display font-medium text-slate-500 uppercase">Neural Sync Interrompido</p>
+            </div>
+
+            <div className="w-full space-y-4">
+              <button
+                onClick={() => setGameState(GameState.HOME)}
+                className="w-full h-16 stitch-btn stitch-btn-primary !gradient-button !bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+              >
+                REINICIAR PROTOCOLO
+              </button>
             </div>
           </div>
         )}
 
         {gameState === GameState.LEVEL_COMPLETE && (
-          <div className="flex flex-col items-center justify-center h-full animate-pop-in px-6 z-10">
-            <div className="panel-glass p-16 text-center space-y-10 max-w-md w-full border border-secondary/30 relative">
-              <div className="absolute -top-10 left-1/2 -translate-x-1/2">
-                <i className="fas fa-crown text-8xl text-secondary animate-bounce drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]" />
+          <div className="flex flex-col items-center justify-center h-full w-full px-8 text-center gap-8 animate-pop-in">
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+                <span className="material-symbols-outlined text-primary text-4xl">emoji_events</span>
               </div>
-              <div className="pt-4">
-                <h2 className="text-5xl font-black font-display text-white mb-2">OTIMIZADO</h2>
-                <p className="text-primary text-[10px] font-mono font-bold uppercase tracking-[0.4em]">Capacidade Aumentada</p>
+              <h1 className="text-3xl font-display font-black tracking-tighter text-white uppercase">Setor Concluído</h1>
+              <p className="text-xs text-slate-400 font-medium">Excelente performance neural!</p>
+            </div>
+
+            <div className="w-full bg-slate-950/40 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-3 opacity-5">
+                <span className="material-symbols-outlined text-6xl">insights</span>
               </div>
+              <div className="grid grid-cols-2 gap-4 relative z-10 font-display">
+                <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-left">
+                  <p className="text-[8px] uppercase font-black text-slate-500 tracking-wider mb-1">Pontuação</p>
+                  <p className="text-xl font-black text-white">{stats.score.toLocaleString()}</p>
+                </div>
+                <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-left">
+                  <p className="text-[8px] uppercase font-black text-slate-500 tracking-wider mb-1">Precisão</p>
+                  <p className="text-xl font-black text-primary">{stats.perfectLevel ? '100%' : '80%+'}</p>
+                </div>
+                <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-left">
+                  <p className="text-[8px] uppercase font-black text-slate-500 tracking-wider mb-1">Status</p>
+                  <p className="text-sm font-black text-success uppercase">Otimizado</p>
+                </div>
+                <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl text-left">
+                  <p className="text-[8px] uppercase font-black text-slate-500 tracking-wider mb-1">Eficiência</p>
+                  <p className="text-xl font-black text-white">Alta</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full space-y-4">
               <button
                 onClick={() => setGameState(GameState.LEVEL_SELECT)}
-                className="w-full btn-primary"
+                className="w-full h-16 stitch-btn stitch-btn-primary"
               >
-                Próximo Setor <i className="fas fa-chevron-right ml-2" />
+                PRÓXIMO SETOR <span className="material-symbols-outlined">fast_forward</span>
+              </button>
+              <button
+                onClick={() => setGameState(GameState.HOME)}
+                className="w-full h-14 bg-transparent border border-slate-800 text-slate-400 font-display font-bold text-xs uppercase tracking-widest rounded-2xl hover:bg-slate-800/20"
+              >
+                DASHBOARD CENTRAL
               </button>
             </div>
           </div>
         )}
       </main>
+
+      {/* Decorative Home Indicator Area */}
+      <div className="fixed bottom-2 left-1/2 -translate-x-1/2 opacity-20 hidden md:block">
+        <div className="flex items-center gap-2">
+          <div className="w-1 h-1 bg-primary"></div>
+          <span className="text-[8px] tracking-[0.5em] uppercase font-bold text-primary">MathMaster Protocol v3.0.0</span>
+          <div className="w-1 h-1 bg-primary"></div>
+        </div>
+      </div>
     </div>
   );
 };

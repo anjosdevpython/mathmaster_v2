@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MathMaster Web Dark Variant 2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0ddff2",
+                        "success": "#a3e635",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#102122",
+                        "surface-dark": "#1a2a2b",
+                        "border-dark": "#253a3b",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains+Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .inner-shadow-primary {
+            box-shadow: inset 0 2px 4px 0 rgba(255, 255, 255, 0.15);
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(13, 223, 242, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200 min-h-screen flex items-center justify-center p-4">
+<!-- Mobile Container (Phone Form Factor) -->
+<div class="w-full max-w-[400px] bg-background-light dark:bg-background-dark h-[844px] relative overflow-hidden flex flex-col border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl">
+<!-- Status Bar Mockup -->
+<div class="flex justify-between items-center px-8 pt-4 pb-2 text-xs font-semibold">
+<span>9:41</span>
+<div class="flex gap-1.5 items-center">
+<span class="material-icons text-[14px]">signal_cellular_alt</span>
+<span class="material-icons text-[14px]">wifi</span>
+<span class="material-icons text-[14px]">battery_full</span>
+</div>
+</div>
+<!-- Header Navigation -->
+<nav class="flex items-center justify-between px-6 py-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark">
+<span class="material-icons text-primary">close</span>
+</button>
+<div class="text-center">
+<p class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold">Modo Desafio</p>
+<h1 class="text-sm font-bold">Nível Avançado</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark">
+<span class="material-icons text-primary">settings</span>
+</button>
+</nav>
+<!-- Progress Bar -->
+<div class="px-6 py-2">
+<div class="w-full h-1.5 bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3 rounded-full glow-primary"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-[10px] font-mono text-slate-400">PROGRESSO 65%</span>
+<div class="flex items-center gap-1">
+<span class="material-icons text-[12px] text-success">local_fire_department</span>
+<span class="text-[10px] font-mono text-success font-bold">COMBO x12</span>
+</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center px-6 gap-8">
+<!-- Question Card -->
+<div class="w-full bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl p-8 flex flex-col items-center justify-center shadow-lg relative overflow-hidden">
+<!-- Decorative grid pattern -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(circle, #0ddff2 1px, transparent 1px); background-size: 20px 20px;"></div>
+<span class="text-xs font-mono text-primary/60 mb-4 tracking-tighter">SESSÃO_ID: 0824-A</span>
+<div class="text-5xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-4">
+<span class="font-mono">42</span>
+<span class="text-primary font-light">×</span>
+<span class="font-mono">15</span>
+<span class="text-primary font-light">=</span>
+<span class="text-slate-300 dark:text-slate-700 font-mono">?</span>
+</div>
+</div>
+<!-- Input Section -->
+<div class="w-full space-y-4">
+<div class="relative group">
+<label class="absolute -top-2.5 left-4 px-2 bg-background-light dark:bg-background-dark text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest z-10">Sua Resposta</label>
+<input class="w-full bg-transparent border-2 border-slate-200 dark:border-border-dark rounded-lg py-5 px-6 text-2xl font-mono text-center focus:ring-0 focus:border-primary transition-colors outline-none text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-700" placeholder="Digite o resultado..." type="text"/>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-3">
+<button class="flex-1 bg-primary text-background-dark font-bold py-4 rounded-lg inner-shadow-primary active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span>CONFIRMAR</span>
+<span class="material-icons text-sm">keyboard_return</span>
+</button>
+<button class="w-16 bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-border-dark text-slate-500 rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-icons">skip_next</span>
+</button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-3 gap-3 w-full">
+<div class="bg-slate-50 dark:bg-surface-dark/50 border border-slate-200 dark:border-border-dark rounded-lg p-3 text-center">
+<p class="text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-1">Tempo</p>
+<p class="text-sm font-mono font-bold text-primary">02:14</p>
+</div>
+<div class="bg-slate-50 dark:bg-surface-dark/50 border border-slate-200 dark:border-border-dark rounded-lg p-3 text-center border-b-success/30">
+<p class="text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-1">Acertos</p>
+<p class="text-sm font-mono font-bold text-success">28/30</p>
+</div>
+<div class="bg-slate-50 dark:bg-surface-dark/50 border border-slate-200 dark:border-border-dark rounded-lg p-3 text-center">
+<p class="text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 mb-1">Precisão</p>
+<p class="text-sm font-mono font-bold text-slate-700 dark:text-slate-300">93%</p>
+</div>
+</div>
+</main>
+<!-- Footer Visual Element -->
+<footer class="p-6">
+<div class="w-full rounded-xl overflow-hidden h-24 relative border border-slate-200 dark:border-border-dark">
+<img alt="Resumo do Desempenho" class="w-full h-full object-cover grayscale opacity-20 dark:opacity-30" data-alt="Abstract glowing mathematical network nodes pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzOUSweFlRV6p_C8QAzGq6TiC33Qw6CNGXF68vyXu_GBGUxG60Q56-kE7FCGTstllyMhcsZgEpEOL5kT-GmPeGoHfhJKcd8X8oroAG0wTKY6x8k6ntDpazpP3AVuf94Ihuqgbkmbal1FBt9IsqXXHbxwVFTVbOO407vcSxcYFskQYfMmeKVMX3vA6KtUhIqum06Y_4J246U7XtqrjQrFd9DUyXCbGFw2e_9ctM-tcCDPyIRRwqKg9VbnivV20wz3fw9gyC6iIj2_Q"/>
+<div class="absolute inset-0 bg-gradient-to-r from-background-light dark:from-background-dark via-transparent to-transparent"></div>
+<div class="absolute inset-0 flex items-center px-4">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Resumo de Hoje</p>
+<p class="text-xs text-slate-600 dark:text-slate-300 max-w-[140px]">Você está entre os 5% melhores da categoria.</p>
+</div>
+</div>
+<div class="absolute right-4 top-1/2 -translate-y-1/2">
+<span class="material-icons text-primary/40 text-4xl">insights</span>
+</div>
+</div>
+</footer>
+<!-- iOS Home Indicator -->
+<div class="flex justify-center pb-2">
+<div class="w-32 h-1 bg-slate-300 dark:bg-border-dark rounded-full"></div>
+</div>
+</div>
+</body></html>

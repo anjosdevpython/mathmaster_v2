@@ -55,53 +55,64 @@ export const PersistenceService = {
     // Cloud methods
     async init(): Promise<void> {
         try {
-            // Tenta logar anonimamente se não houver sessão
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                await supabase.auth.signInAnonymously();
+            if (session) {
+                console.log('Persistence: Sessão detectada, sincronizando...');
+                await this.sync();
+            } else {
+                console.log('Persistence: Modo local (sem usuário autenticado).');
             }
-            // Sincroniza dados ao iniciar
-            await this.sync();
         } catch (e) {
-            console.warn('Cloud persistence initialization failed:', e);
+            console.warn('Persistence initialization skipped (local mode only).');
         }
     },
 
     async sync(): Promise<void> {
         try {
+            console.log('Sync: Iniciando sincronização...');
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user) {
+                console.log('Sync: Nenhum usuário autenticado para sincronizar.');
+                return;
+            }
 
-            // Busca dados da nuvem
-            const { data: cloudEntry, error } = await supabase
-                .from('game_progress')
-                .select('data, updated_at')
-                .eq('user_id', user.id)
-                .single();
+            // Adicionar um timeout manual de 5 segundos para a requisição
+            const syncPromise = (async () => {
+                const { data: cloudEntry, error } = await supabase
+                    .from('game_progress')
+                    .select('data, updated_at')
+                    .eq('user_id', user.id)
+                    .maybeSingle(); // maybeSingle é mais seguro que single() para 0 ou 1 resultado
 
-            const localData = this.loadLocal();
+                const localData = this.loadLocal();
 
-            if (cloudEntry && cloudEntry.data) {
-                // Se nuvem existe, compara versões ou timestamps
-                // Simplificação: Nuvem ganha se a versão for maior, senão local ganha
-                const cloudData = cloudEntry.data as GameSaveData;
+                if (cloudEntry && cloudEntry.data) {
+                    console.log('Sync: Dados encontrados na nuvem.');
+                    const cloudData = cloudEntry.data as GameSaveData;
 
-                if (cloudData.version > localData.version ||
-                    (cloudData.version === localData.version && cloudData.unlockedLevel > localData.unlockedLevel)) {
-                    console.log('Sync: Cloud data is newer, updating local.');
-                    this.saveLocal(cloudData);
-                    // Força reload da página se necessário, ou idealmente atualizaria o estado via callback
-                    // Mas como este método roda no boot, o estado será carregado depois pelo App
+                    if (cloudData.version > localData.version ||
+                        (cloudData.version === localData.version && cloudData.unlockedLevel > localData.unlockedLevel)) {
+                        console.log('Sync: Dados da nuvem são mais recentes, atualizando local.');
+                        this.saveLocal(cloudData);
+                    } else if (JSON.stringify(cloudData) !== JSON.stringify(localData)) {
+                        console.log('Sync: Dados locais são mais recentes ou diferentes, atualizando nuvem.');
+                        await this.saveCloud(localData);
+                    }
                 } else {
-                    console.log('Sync: Local data is newer or equal, updating cloud.');
+                    // Se não há dados na nuvem (ou erro de não encontrado)
+                    console.log('Sync: Primeira sincronização, enviando dados locais para nuvem.');
                     await this.saveCloud(localData);
                 }
-            } else if (!error) {
-                // Primeira vez na nuvem
-                await this.saveCloud(localData);
-            }
+            })();
+
+            // Timeout de 5s para evitar travamento infinito
+            await Promise.race([
+                syncPromise,
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout na sincronização')), 5000))
+            ]);
+
         } catch (e) {
-            console.error('Sync failed:', e);
+            console.error('Sync failed or timed out:', e);
         }
     },
 

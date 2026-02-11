@@ -1,9 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { GameState, GameStats, Question } from '../types';
-import { LEVELS, INITIAL_LIVES } from '../constants';
-import Timer from '../components/Timer';
-import { PowerVisual } from '../components/visuals/PowerVisual';
-import { SqrtVisual } from '../components/visuals/SqrtVisual';
 import { TutorialOverlay } from '../components/TutorialOverlay';
 
 interface GameViewProps {
@@ -21,125 +17,196 @@ interface GameViewProps {
     visibleSteps: number;
     isFlashing: boolean;
     nextQ: () => void;
+    aiExplanation: string | null;
+    isLoadingAI: boolean;
+    successMessage: string | null;
 }
 
 export const GameView: React.FC<GameViewProps> = ({
     gameState, stats, currentQuestion, timeLeft, userInput, setUserInput, handleSubmit,
-    feedback, setGameState, showExplanation, setShowExplanation, visibleSteps, isFlashing, nextQ
+    feedback, setGameState, showExplanation, setShowExplanation, visibleSteps, isFlashing, nextQ,
+    aiExplanation, isLoadingAI, successMessage
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const isTraining = gameState === GameState.TRAINING;
-    const steps = currentQuestion?.explanation?.split('|') || [];
 
-    // Auto-focus no input sempre que a pergunta mudar ou o feedback for limpo
     useEffect(() => {
         if (!feedback && !showExplanation) {
-            // Pequeno delay para garantir que a renderização terminou
             const timer = setTimeout(() => inputRef.current?.focus(), 10);
             return () => clearTimeout(timer);
         }
     }, [currentQuestion, feedback, showExplanation]);
 
+    if (!currentQuestion) return null;
+
+    // Formatting time with milliseconds for the "Tech" feel
+    const formattedTime = (timeLeft: number) => {
+        const seconds = Math.floor(timeLeft);
+        const ms = Math.floor((timeLeft % 1) * 100);
+        return {
+            s: seconds.toString().padStart(2, '0'),
+            ms: ms.toString().padStart(2, '0')
+        };
+    };
+
+    const time = formattedTime(timeLeft);
+    const progress = !isTraining && currentQuestion ? (stats.currentQuestionIndex / 10) * 100 : 0;
+
     return (
-        <div className={`flex flex-col h-full max-w-4xl mx-auto px-6 py-10 relative z-10 ${isFlashing ? 'bg-danger/10' : ''}`}>
-
-            {/* HUD Header */}
-            <div className="flex items-center gap-6 panel-glass p-4 mb-4 md:mb-8 border-t-2 border-t-primary/50 relative shrink-0">
-
-                <div className="flex-1">
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-primary/70 block mb-1">
-                        {isTraining ? 'ACERTOS' : 'SCORE'}
-                    </span>
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-bold font-display text-white">
-                            {isTraining ? stats.correctInLevel : stats.score}
-                        </span>
-                        {!isTraining && (
-                            <span className="text-sm font-mono text-white/40">
-                                / {LEVELS[stats.currentLevel - 1]?.totalQuestions || 10} Q
+        <div className="relative w-full max-w-[430px] h-full mx-auto overflow-hidden bg-background-dark/40 shadow-2xl flex flex-col border-x border-primary/10 animate-pop-in">
+            {/* HUD / Header Area */}
+            <header className="relative z-10 px-6 pt-12 flex flex-col gap-4">
+                <div className="flex justify-between items-center mb-1">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Progresso</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-white/80">
+                                {isTraining ? 'Training Mode' : `Questão ${stats.currentQuestionIndex + 1}/10`}
                             </span>
-                        )}
+                        </div>
                     </div>
-                    {/* Barra de Progresso Fina */}
                     {!isTraining && (
-                        <div className="h-1 w-24 bg-white/10 mt-1 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-primary transition-all duration-300"
-                                style={{ width: `${(stats.currentQuestionIndex / (LEVELS[stats.currentLevel - 1]?.totalQuestions || 10)) * 100}%` }}
-                            />
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Tempo</span>
+                            <div className={`flex items-center gap-1 tabular-nums transition-colors ${timeLeft <= 5 ? 'text-red-400' : 'text-primary'}`}>
+                                <span className="material-icons text-sm">schedule</span>
+                                <span className="text-lg font-bold glow-text">00:{time.s}</span>
+                                <span className="text-xs opacity-50">.{time.ms}</span>
+                            </div>
                         </div>
                     )}
                 </div>
 
+                {/* Progress Bar */}
                 {!isTraining && (
-                    <div className="flex gap-1">
-                        {Array.from({ length: INITIAL_LIVES }).map((_, i) => (
-                            <div
-                                key={i}
-                                className={`w-8 h-2 transform skew-x-12 ${i < stats.lives ? 'bg-danger shadow-glow-danger' : 'bg-white/10'}`}
-                            />
-                        ))}
+                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-primary transition-all duration-500 shadow-[0_0_10px_#10B981]"
+                            style={{ width: `${progress}%` }}
+                        />
                     </div>
                 )}
 
-                <button
-                    onClick={() => setGameState(GameState.HOME)}
-                    className="w-10 h-10 flex items-center justify-center rounded-tech bg-white/5 text-white/40 hover:text-white hover:bg-danger transition-colors"
-                >
-                    <i className="fas fa-times" />
-                </button>
-            </div>
+                {/* Points & Stats HUD */}
+                <div className="flex justify-between items-center mt-2">
+                    <div className="glass-panel px-4 py-1.5 rounded-full flex items-center gap-3 border-primary/20 backdrop-blur-md">
+                        <div className="flex flex-col">
+                            <span className="text-[8px] uppercase tracking-tighter text-slate-400 leading-none">Pontos</span>
+                            <span className="text-primary font-bold tracking-tight text-xs leading-none mt-1">{stats.score.toLocaleString()}</span>
+                        </div>
+                        <div className="h-4 w-[1px] bg-white/10" />
+                        <div className="flex flex-col">
+                            <span className="text-[8px] uppercase tracking-tighter text-slate-400 leading-none">Combo</span>
+                            <span className="text-success font-bold tracking-tight text-xs leading-none mt-1">x{stats.correctInLevel}</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-8 bg-primary shadow-[0_0_8px_#10B981]' : 'w-2 bg-white/10'}`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </header>
 
-            <div className="flex-1 flex flex-col items-center justify-center gap-12 relative">
-                {!isTraining && <Timer current={timeLeft} total={LEVELS[stats.currentLevel - 1].timePerQuestion} />}
+            {/* Main Problem Area */}
+            <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-8">
+                <div className="relative group perspective-1000">
+                    <div className="absolute -top-16 -left-16 w-32 h-32 border-t-2 border-l-2 border-primary/20 rounded-tl-[3rem] pointer-events-none" />
+                    <div className="absolute -bottom-16 -right-16 w-32 h-32 border-b-2 border-r-2 border-primary/20 rounded-br-[3rem] pointer-events-none" />
 
-                <div className="text-center w-full">
-                    <h2 className={`text-5xl md:text-9xl font-black font-display tracking-tighter transition-all duration-200
-            ${feedback === 'correct' ? 'text-primary scale-110 drop-shadow-[0_0_30px_rgba(16,185,129,0.5)]' :
-                            feedback === 'wrong' ? 'text-danger shake-error drop-shadow-[0_0_30px_rgba(239,68,68,0.5)]' : 'text-white'}`}>
-                        {currentQuestion?.text}
-                    </h2>
+                    <div className="text-center relative">
+                        <p className="text-[10px] uppercase tracking-[0.4em] text-primary/40 mb-4 font-mono">Maestria Mental</p>
+                        <h1 className={`text-7xl md:text-8xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
+                            {currentQuestion.text.split(' ').map((part, i) => (
+                                <span key={i} className={i === 1 ? 'text-primary px-2' : ''}>{part}</span>
+                            ))}
+                        </h1>
+                        <div className="h-1 w-16 bg-primary/30 rounded-full mx-auto mt-12 mb-8" />
+                    </div>
 
-                    {feedback === 'wrong' && isTraining && (
+                    <div className="w-full relative group">
+                        <input
+                            ref={inputRef}
+                            type="number"
+                            value={userInput}
+                            onChange={(e) => setUserInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                            placeholder="?"
+                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-[2.5rem] p-8 text-7xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10`}
+                            autoFocus
+                        />
                         <button
-                            onClick={() => setShowExplanation(true)}
-                            className="mt-8 px-6 py-2 bg-accent/10 hover:bg-accent/20 text-accent border border-accent/40 rounded-tech font-mono font-bold uppercase tracking-widest text-xs animate-pop-in flex items-center gap-2 mx-auto"
+                            onClick={handleSubmit}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-primary text-background-dark rounded-3xl flex items-center justify-center text-3xl shadow-neon hover:scale-105 active:scale-95 transition-all"
                         >
-                            <i className="fas fa-eye" /> Ver Tutorial
+                            <span className="material-symbols-outlined font-black">check</span>
                         </button>
+                    </div>
+
+                    {feedback === 'wrong' && (
+                        <div className="absolute -bottom-32 left-0 right-0 flex flex-col sm:flex-row items-center gap-4 animate-pop-in">
+                            <button
+                                onClick={() => setShowExplanation(true)}
+                                disabled={isLoadingAI}
+                                className="flex-1 stitch-btn stitch-btn-primary w-full"
+                            >
+                                {isLoadingAI ? (
+                                    <><span className="material-symbols-outlined animate-spin text-xl">sync</span> ANALISANDO...</>
+                                ) : (
+                                    <><span className="material-symbols-outlined text-xl">school</span> MACETE DO MESTRE</>
+                                )}
+                            </button>
+                            <button
+                                onClick={nextQ}
+                                className="flex-1 stitch-btn stitch-btn-outline w-full"
+                            >
+                                <span className="material-symbols-outlined text-xl">fast_forward</span> PULAR
+                            </button>
+                        </div>
                     )}
                 </div>
+            </main>
 
-                <form onSubmit={handleSubmit} className="w-full max-w-md relative group">
-                    <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity rounded-full"></div>
-                    <input
-                        ref={inputRef}
-                        type="number"
-                        inputMode="numeric" // Mobile numeric keyboard trigger
-                        pattern="[0-9]*"   // Mobile numeric keyboard trigger fallback
-                        value={userInput}
-                        onChange={e => setUserInput(e.target.value)}
-                        className="w-full bg-black/60 border-2 border-white/10 rounded-full py-6 md:py-8 px-8 text-4xl md:text-6xl font-bold font-display text-center text-white 
-                       focus:outline-none focus:border-primary focus:shadow-glow-primary transition-all placeholder-white/5 relative z-10"
-                        placeholder="?"
-                        autoFocus
-                        disabled={feedback === 'correct' || showExplanation}
-                    />
-                </form>
+            {/* Footer Meta Info */}
+            <footer className="relative z-10 px-8 pb-12 flex justify-between items-end">
+                <div className="flex flex-col gap-1">
+                    <p className="text-[9px] text-white/20 font-mono tracking-widest uppercase">Protocolo: MATH_X_992</p>
+                    <p className="text-[9px] text-white/20 font-mono tracking-widest uppercase">Neural Sync: Estável</p>
+                </div>
+                <button
+                    onClick={() => setGameState(GameState.HOME)}
+                    className="text-[10px] uppercase font-display font-bold text-white/30 hover:text-white transition-colors flex items-center gap-2"
+                >
+                    Abandonar Missão <span className="material-symbols-outlined text-sm">logout</span>
+                </button>
+            </footer>
+
+            {/* Bottom Indicator */}
+            <div className="relative z-10 flex justify-center pb-4">
+                <div className="w-32 h-1 bg-white/10 rounded-full" />
             </div>
 
-            {/* Explanation Modal (The Interactive Tutorial Overlay) */}
-            {showExplanation && currentQuestion && (
+            {showExplanation && (
                 <TutorialOverlay
                     question={currentQuestion}
+                    aiExplanation={aiExplanation}
                     onClose={() => {
                         setShowExplanation(false);
-                        // Optional: Next question immediately or let user act? User usually wants to try again or move on.
-                        // Let's keep existing logic: closes modal, user is back to input.
-                        // If in training, maybe we force a new question if they just learned?
-                        // For now just close.
+                        nextQ();
                     }}
                 />
+            )}
+
+            {successMessage && (
+                <div className="fixed top-32 left-0 right-0 z-[200] flex justify-center pointer-events-none px-4">
+                    <div className="gradient-button text-white px-10 py-5 rounded-[2.5rem] font-black text-2xl shadow-neon animate-pop-in flex items-center gap-4">
+                        <span className="material-symbols-outlined text-3xl">bolt</span>
+                        <span className="tracking-tighter">{successMessage}</span>
+                    </div>
+                </div>
             )}
         </div>
     );

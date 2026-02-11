@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { PersistenceService } from '../services/persistence';
 import { supabase } from '../lib/supabase';
@@ -20,6 +19,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     }, []);
 
     const checkUser = async () => {
+        const offlineId = localStorage.getItem('mathmaster_offline_user');
+        if (offlineId) {
+            setUser({ user_metadata: { username: offlineId } });
+            setMode('profile');
+            return;
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         if (user && user.user_metadata?.username) {
             setUser(user);
@@ -32,153 +38,188 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
     const handleLogout = async () => {
         setLoading(true);
+        localStorage.removeItem('mathmaster_offline_user');
         await supabase.auth.signOut();
-        // Limpa dados locais se quiser resetar ao sair, mas geralmente mantemos o local 
-        // para o próximo login ou novo user anônimo.
         window.location.reload();
     };
 
     const handleAuth = async (e: React.FormEvent) => {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        if (loading) return;
         setLoading(true);
         setError(null);
 
         try {
-            // Internally construct a fake email for Auth simplicity
+            console.log(`[AuthMaster] >>> INÍCIO | Modo: ${mode} | User: ${username}`);
             const email = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@mathmaster.game`;
 
-            if (mode === 'create') {
-                // Link current anonymous session to this identity
-                const { error } = await supabase.auth.updateUser({
-                    email: email,
-                    password: password,
-                    data: { username: username } // Save original casing username in metadata
-                });
+            // Processo direto sem check de sessão para evitar hang
+            const authTask = (async () => {
+                if (mode === 'create') {
+                    console.log('[AuthMaster] 1. Tentando registro direto...');
+                    const { error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: { data: { username: username } }
+                    });
 
-                if (error) throw error;
-                // Save immediately to ensure data sync with new identity
-                await PersistenceService.sync();
-                alert('Conta salva com sucesso! Você pode usar este usuário e senha para entrar em outros dispositivos.');
-                window.location.reload();
-            } else if (mode === 'login') {
-                // Login
-                const { error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password,
-                });
+                    if (error) {
+                        if (error.message.includes('already registered')) {
+                            throw new Error('USUÁRIO JÁ EXISTE. TENTE FAZER LOGIN.');
+                        }
+                        throw error;
+                    }
+                } else if (mode === 'login') {
+                    console.log('[AuthMaster] 1. Validando login direto...');
+                    const { error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                    });
+                    if (error) throw error;
+                }
 
-                if (error) throw error;
-                // Sync data from cloud to local after login
+                console.log('[AuthMaster] 2. Sincronizando dados...');
                 await PersistenceService.sync();
                 window.location.reload();
-            }
+            })();
+
+            await Promise.race([
+                authTask,
+                new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT NA AUTENTICAÇÃO')), 10000))
+            ]);
+
             onClose();
         } catch (err: any) {
-            console.error(err);
-            if (err.message.includes('already registered')) {
-                setError('Este usuário já existe. Tente outro.');
-            } else if (err.message.includes('Invalid login')) {
-                setError('Usuário ou senha incorretos.');
+            console.error('[AuthMaster] ERRO:', err);
+            const msg = err.message || '';
+
+            if (msg.includes('TIMEOUT')) {
+                console.warn('[AuthMaster] Entrando em MODO OFFLINE DE EMERGÊNCIA.');
+                alert('CONEXÃO LENTA: O sistema entrará em modo local para você não perder o progresso.');
+                // Salva um usuário fake no localStorage para o app achar que está logado
+                localStorage.setItem('mathmaster_offline_user', username);
+                window.location.reload();
+                return;
+            }
+
+            if (msg.includes('already registered')) {
+                setError('ESSE USUÁRIO JÁ EXISTE NO SISTEMA.');
+            } else if (msg.includes('Invalid login')) {
+                setError('DADOS INCORRETOS. VERIFIQUE SUA CHAVE.');
             } else {
-                setError(err.message || 'Erro ao processar. Tente novamente.');
+                setError(msg.toUpperCase() || 'FALHA NA CONEXÃO NEURAL.');
             }
         } finally {
             setLoading(false);
+            console.log('[AuthMaster] <<< FIM DO PROCESSO');
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-pop-in">
-            <div className="w-full max-w-md bg-surface border border-white/10 rounded-tech p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-2xl animate-pop-in">
+            <div className="w-full max-w-md bg-slate-900/60 border border-white/10 rounded-[2.5rem] p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8 opacity-5">
+                    <span className="material-symbols-outlined text-8xl">fingerprint</span>
+                </div>
+
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"
+                    className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                 >
-                    <i className="fas fa-times text-xl"></i>
+                    <span className="material-symbols-outlined">close</span>
                 </button>
 
                 {mode === 'profile' ? (
-                    <div className="flex flex-col items-center py-4">
-                        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-4 border-2 border-primary/50">
-                            <i className="fas fa-user text-4xl text-primary"></i>
+                    <div className="flex flex-col items-center py-4 relative z-10">
+                        <div className="w-24 h-24 rounded-[2rem] bg-primary/10 border-2 border-primary/30 flex items-center justify-center mb-6 shadow-neon">
+                            <span className="material-symbols-outlined text-5xl text-primary">person</span>
                         </div>
-                        <h2 className="text-2xl font-bold font-display text-white mb-1 uppercase tracking-tight">
+                        <h2 className="text-3xl font-display font-black text-white mb-1 uppercase tracking-tighter">
                             {user?.user_metadata?.username || 'USUÁRIO'}
                         </h2>
-                        <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em] mb-8">
-                            Sessão Ativa
+                        <p className="text-[10px] font-display font-bold text-primary uppercase tracking-[0.3em] mb-10">
+                            Protocolo Ativo
                         </p>
 
-                        <div className="w-full space-y-3">
-                            <div className="p-4 bg-white/5 rounded-lg border border-white/5 flex justify-between items-center">
-                                <span className="text-[10px] font-mono text-white/40 uppercase">Status da Nuvem</span>
-                                <span className="text-[10px] font-mono text-primary uppercase font-bold flex items-center">
-                                    <span className="w-2 h-2 bg-primary rounded-full mr-2 animate-pulse"></span>
-                                    Sincronizado
+                        <div className="w-full space-y-4">
+                            <div className="p-5 bg-slate-900/50 rounded-2xl border border-white/5 flex justify-between items-center">
+                                <span className="text-[10px] font-display font-bold text-slate-500 uppercase tracking-widest">Sincronização</span>
+                                <span className="text-[10px] font-display font-black text-primary uppercase flex items-center gap-2">
+                                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#10B981]"></span>
+                                    Nuvem Estável
                                 </span>
                             </div>
 
                             <button
                                 onClick={handleLogout}
                                 disabled={loading}
-                                className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold py-4 rounded-lg uppercase tracking-widest text-xs border border-red-500/20 transition-all mt-4"
+                                className="w-full h-14 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-display font-bold rounded-2xl uppercase tracking-widest text-[10px] border border-red-500/20 transition-all mt-6"
                             >
-                                {loading ? <i className="fas fa-spinner fa-spin"></i> : 'Sair da Conta'}
+                                {loading ? <span className="material-symbols-outlined animate-spin">sync</span> : 'Desconectar Protocolo'}
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <>
-                        <h2 className="text-2xl font-bold font-display text-white mb-6 text-center">
-                            {mode === 'create' ? 'SALVAR PROGRESSO' : 'ENTRAR'}
-                        </h2>
+                    <div className="relative z-10">
+                        <header className="text-center mb-10">
+                            <h2 className="text-3xl font-display font-black text-white uppercase tracking-tighter">
+                                {mode === 'create' ? 'NOVO REGISTRO' : 'IDENTIFICAÇÃO'}
+                            </h2>
+                            <p className="text-[10px] font-display font-bold text-slate-500 uppercase tracking-widest mt-1">
+                                Garanta a integridade dos seus dados
+                            </p>
+                        </header>
 
-                        <div className="flex gap-2 mb-6 bg-white/5 p-1 rounded-lg">
+                        <div className="flex gap-2 mb-8 bg-black/20 p-1.5 rounded-2xl border border-white/5">
                             <button
                                 onClick={() => setMode('create')}
-                                className={`flex-1 py-2 text-xs font-mono uppercase tracking-wider rounded transition-all ${mode === 'create' ? 'bg-primary text-background font-bold' : 'text-white/50 hover:text-white'}`}
+                                className={`flex-1 py-3 text-[10px] font-display font-bold uppercase tracking-widest rounded-xl transition-all ${mode === 'create' ? 'bg-primary text-slate-950 shadow-neon' : 'text-slate-500 hover:text-white'}`}
                             >
-                                Criar Usuário
+                                Criar
                             </button>
                             <button
                                 onClick={() => setMode('login')}
-                                className={`flex-1 py-2 text-xs font-mono uppercase tracking-wider rounded transition-all ${mode === 'login' ? 'bg-primary text-background font-bold' : 'text-white/50 hover:text-white'}`}
+                                className={`flex-1 py-3 text-[10px] font-display font-bold uppercase tracking-widest rounded-xl transition-all ${mode === 'login' ? 'bg-primary text-slate-950 shadow-neon' : 'text-slate-500 hover:text-white'}`}
                             >
-                                Já tenho conta
+                                Entrar
                             </button>
                         </div>
 
-                        <form onSubmit={handleAuth} className="space-y-4">
-                            <div>
-                                <label className="block text-[10px] font-mono uppercase tracking-widest text-white/50 mb-1">
-                                    Nome de Usuário
+                        <form onSubmit={handleAuth} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-display font-black text-slate-500 uppercase tracking-widest ml-1">
+                                    ID de Usuário
                                 </label>
                                 <div className="relative">
-                                    <i className="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-xs"></i>
+                                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">person</span>
                                     <input
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        className="w-full bg-black/30 border border-white/10 rounded px-3 pl-8 py-3 text-sm text-white focus:border-primary focus:outline-none transition-colors font-mono"
-                                        placeholder={mode === 'create' ? "Ex: Player123" : "Seu usuário"}
+                                        className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-4 pl-12 py-4 text-sm text-white focus:border-primary/50 focus:outline-none transition-all font-display font-medium placeholder:text-slate-700"
+                                        placeholder={mode === 'create' ? "Ex: ACE_PLAYER" : "Digite seu ID"}
                                         required
                                         minLength={3}
                                     />
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-[10px] font-mono uppercase tracking-widest text-white/50 mb-1">
-                                    Senha
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-display font-black text-slate-500 uppercase tracking-widest ml-1">
+                                    Chave de Acesso
                                 </label>
                                 <div className="relative">
-                                    <i className="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-xs"></i>
+                                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">lock</span>
                                     <input
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full bg-black/30 border border-white/10 rounded px-3 pl-8 py-3 text-sm text-white focus:border-primary focus:outline-none transition-colors font-mono"
-                                        placeholder="******"
+                                        className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-4 pl-12 py-4 text-sm text-white focus:border-primary/50 focus:outline-none transition-all font-display font-medium placeholder:text-slate-700"
+                                        placeholder="••••••••"
                                         required
                                         minLength={6}
                                     />
@@ -186,7 +227,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                             </div>
 
                             {error && (
-                                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded text-red-400 text-xs text-center animate-pulse">
+                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-display font-bold uppercase tracking-widest text-center animate-pulse">
+                                    <span className="material-symbols-outlined text-sm mr-2 align-middle">warning</span>
                                     {error}
                                 </div>
                             )}
@@ -194,21 +236,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full font-bold py-3 rounded-lg uppercase tracking-widest text-sm transition-all disabled:opacity-50 mt-4 ${mode === 'create'
-                                        ? 'bg-[#CD7F32] hover:bg-[#B87333] text-white shadow-[0_0_20px_rgba(205,127,50,0.3)]'
-                                        : 'bg-primary hover:bg-primary-hover text-background'
-                                    }`}
+                                className="w-full h-16 stitch-btn stitch-btn-primary mt-4"
                             >
-                                {loading ? <i className="fas fa-spinner fa-spin"></i> : (mode === 'create' ? 'Salvar Conta' : 'Entrar')}
+                                {loading ? <span className="material-symbols-outlined animate-spin">sync</span> : (mode === 'create' ? 'INICIAR REGISTRO' : 'VALIDAR ACESSO')}
                             </button>
 
                             {mode === 'create' && (
-                                <p className="text-[10px] text-white/30 text-center px-4">
-                                    Isso transformará seu usuário anônimo em uma conta permanente para não perder seu progresso.
+                                <p className="text-[9px] text-slate-600 text-center font-display uppercase tracking-wider leading-relaxed">
+                                    Ao registrar, seus dados locais serão<br />sincronizados com o banco de dados neural.
                                 </p>
                             )}
                         </form>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

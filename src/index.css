@@ -3,92 +3,131 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --primary: 16 185 129; /* Emerald 500 */
+    --primary-hover: 5 150 105; /* Emerald 600 */
+    --accent: 96 165 250; /* Blue 400 */
+    --neon-cyan: 34 211 238; /* Cyan 400 */
+    --background: 2 6 23; /* Dark Navy/Black from redesign */
+    --surface: 15 23 42; /* Slate 900 */
+    --surface-light: 30 41 59; /* Slate 800 */
+    --border: 30 41 59;
+  }
+
   html, body, #root {
     @apply h-full w-full overflow-hidden;
+    background-color: rgb(var(--background));
+    color: white;
   }
+  
   body {
-    @apply bg-background text-white font-sans antialiased;
+    @apply font-sans antialiased selection:bg-primary/30 selection:text-white;
+    background-image: 
+      radial-gradient(circle at 0% 0%, rgba(var(--primary), 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(var(--accent), 0.05) 0%, transparent 50%);
   }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-wide;
+    @apply tracking-tight;
   }
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  .font-display { font-family: 'Orbitron', sans-serif; }
+  .font-sans { font-family: 'Inter', sans-serif; }
+  .font-lexend { font-family: 'Lexend', sans-serif; }
+  .font-grotesk { font-family: 'Space Grotesk', sans-serif; }
+
+  /* Redesign Utilities */
+  .star-bg {
+    background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 24px 24px;
   }
 
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+  .cyber-grid {
+    background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 
-  /* Hide spin buttons for inputs */
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  .glow-text {
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
   }
-  input[type=number] {
-    -moz-appearance: textfield;
+
+  .gradient-button {
+    background: linear-gradient(135deg, #10B981 0%, #06b6d4 100%);
+  }
+
+  .glass-panel {
+    @apply bg-surface/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(var(--surface-light), 0.5);
+    @apply rounded-full;
   }
 }
 
 @layer components {
-  /* Utility class for technical panels */
-  .panel-glass {
-    @apply bg-surface/80 backdrop-blur-md border border-white/5 rounded-panel shadow-panel;
+  /* Updated Stitch-style Cards */
+  .stitch-card {
+    @apply bg-surface/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] shadow-2xl transition-all duration-300;
+  }
+  
+  .stitch-card-hover {
+    @apply hover:border-primary/30 hover:shadow-neon hover:-translate-y-1;
   }
 
-  /* Primary Button Style */
-  .btn-primary {
-    @apply bg-primary text-background font-bold uppercase tracking-widest px-8 py-4 rounded-tech 
-           hover:bg-primary-hover hover:shadow-glow-primary transition-all duration-300
-           disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center;
+  /* Updated Stitch Buttons */
+  .stitch-btn {
+    @apply relative px-8 py-4 rounded-2xl font-display font-bold uppercase tracking-[0.15em] text-sm
+           overflow-hidden transition-all duration-500 flex items-center justify-center gap-3 active:scale-95;
   }
 
-  /* Secondary Button Style */
-  .btn-secondary {
-    @apply bg-transparent text-white border border-white/20 font-bold uppercase tracking-widest px-8 py-4 rounded-tech
-           hover:bg-white/5 hover:border-primary transition-all duration-300 flex items-center justify-center;
+  .shadow-neon {
+    box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.5), 0 4px 6px -2px rgba(16, 185, 129, 0.25);
   }
 
+  .stitch-btn-primary {
+    @apply gradient-button text-white shadow-neon hover:scale-[1.02];
+  }
+
+  .stitch-btn-outline {
+    @apply border-2 border-slate-800 bg-transparent text-slate-300 hover:border-slate-700 hover:bg-slate-800/20;
+  }
+
+  /* Glowing Effects */
+  .shadow-glow-primary {
+    @apply shadow-[0_0_20px_rgba(var(--primary),0.3)];
+  }
   /* Animations */
+  .animate-float-slow {
+    animation: float 6s ease-in-out infinite;
+  }
+
   .animate-pop-in {
-    @apply animate-[popIn_0.4s_cubic-bezier(0.175,0.885,0.32,1.275)_forwards];
-  }
-  
-  .animate-pulse-fast {
-    @apply animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite];
-  }
-  
-  .animate-float {
-    @apply animate-[float_3s_ease-in-out_infinite];
-  }
-
-  .shake-error {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    @apply animate-[popIn_0.5s_cubic-bezier(0.19,1,0.22,1)_forwards];
   }
 }
 
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
+@layer utilities {
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
 
-@keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.5; filter: blur(40px); }
+    50% { opacity: 0.8; filter: blur(60px); }
+  }
 }
