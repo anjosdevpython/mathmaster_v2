@@ -6,10 +6,11 @@ import { SqrtVisual } from './visuals/SqrtVisual';
 interface TutorialOverlayProps {
     question?: Question;
     aiExplanation?: string | null;
+    isLoading?: boolean;
     onClose: () => void;
 }
 
-export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiExplanation, onClose }) => {
+export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiExplanation, isLoading, onClose }) => {
     const [stepIndex, setStepIndex] = useState(0);
 
     const defaultSteps = [
@@ -56,7 +57,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
                                 {aiExplanation ? 'Mestre Allan Anjos' : 'Protocolo de Treino'}
                             </h2>
                             <p className="text-[7.5px] sm:text-[9px] font-display font-bold text-slate-500 uppercase tracking-widest mt-0.5 sm:mt-1">
-                                {aiExplanation ? 'Mentoria Neural Ativa' : 'Aprimoramento de Habilidades'}
+                                {isLoading ? 'Sincronizando Mente...' : aiExplanation ? 'Mentoria Neural Ativa' : 'Aprimoramento de Habilidades'}
                             </p>
                         </div>
                     </div>
@@ -67,7 +68,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col min-h-0">
                     {/* Optional Visual Section - Only if enough space or not AI */}
-                    {!aiExplanation && question && (
+                    {!aiExplanation && !isLoading && question && (
                         <div className="p-4 sm:p-8 bg-slate-950/20 flex items-center justify-center border-b border-white/5 shrink-0">
                             <div className="scale-75 sm:scale-100">
                                 {question.opType === 'power' && <PowerVisual value={question.values[0]} />}
@@ -80,12 +81,24 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
                     <div className="p-5 sm:p-8 flex flex-col gap-6">
                         <div key={stepIndex} className="animate-pop-in space-y-4">
                             <div className="flex items-center gap-3">
-                                <span className="text-[9px] sm:text-[10px] font-display font-black text-primary px-2 py-1 rounded bg-primary/10 border border-primary/20">PASSO {stepIndex + 1}</span>
+                                <span className="text-[9px] sm:text-[10px] font-display font-black text-primary px-2 py-1 rounded bg-primary/10 border border-primary/20">
+                                    {isLoading ? 'SYNC' : `PASSO ${stepIndex + 1}`}
+                                </span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
 
                             <div className={`font-sans leading-relaxed text-slate-100 ${aiExplanation ? 'text-sm sm:text-base' : 'text-base sm:text-lg font-semibold'}`}>
-                                {aiExplanation ? (
+                                {isLoading ? (
+                                    <div className="flex flex-col items-center justify-center py-12 gap-4">
+                                        <div className="relative">
+                                            <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="material-symbols-outlined text-primary text-xl animate-pulse">psychology</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-[10px] font-display font-black text-primary animate-pulse tracking-[0.3em] uppercase">Sincronizando com o Mestre...</p>
+                                    </div>
+                                ) : aiExplanation ? (
                                     <div className="space-y-3 sm:space-y-4 whitespace-pre-wrap">
                                         {steps[stepIndex].split(/(\[[^\]]+\])/g).map((part, i) => {
                                             if (part.startsWith('[') && part.endsWith(']')) {

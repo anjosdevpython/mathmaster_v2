@@ -270,6 +270,7 @@ export const GameView: React.FC<GameViewProps> = ({
                 <TutorialOverlay
                     question={currentQuestion}
                     aiExplanation={aiExplanation}
+                    isLoading={isLoadingAI}
                     onClose={() => {
                         setShowExplanation(false);
                         nextQ();
