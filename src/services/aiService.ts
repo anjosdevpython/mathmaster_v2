@@ -23,8 +23,8 @@ export const aiService = {
             });
 
             if (error || !data?.choices?.[0]?.message?.content) {
-                console.warn("Using static fallback due to AI error:", error);
-                return fallback;
+                console.warn("AI Service error:", error);
+                return `[O QUE HOUVE]\n\nO mestre não pôde responder por um erro técnico.\n\nDetalhe: ${error?.message || 'Resposta da IA vazia'}\n\n[MISSÃO]\n\nVerifique as variáveis de ambiente e o saldo da API.`;
             }
 
             return data.choices[0].message.content;
