@@ -170,18 +170,33 @@ export const GameView: React.FC<GameViewProps> = ({
                 </div>
             </main>
 
-            {/* Footer Meta Info */}
-            <footer className="relative z-10 px-8 pb-12 flex justify-between items-end">
-                <div className="flex flex-col gap-1">
-                    <p className="text-[9px] text-white/20 font-mono tracking-widest uppercase">Protocolo: MATH_X_992</p>
-                    <p className="text-[9px] text-white/20 font-mono tracking-widest uppercase">Neural Sync: Estável</p>
+            {/* Footer Meta Info Area */}
+            <footer className="relative z-10 px-8 pb-12 w-full">
+                <div className="flex justify-between items-end">
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                            <p className="text-[10px] text-white/40 font-display font-bold tracking-[0.2em] uppercase">
+                                {isTraining ? 'Simulação de Treino' : 'Missão de Campo'}
+                            </p>
+                        </div>
+                        <div className="flex flex-col gap-1 opacity-20">
+                            <p className="text-[8px] text-white font-mono tracking-widest uppercase">Protocolo: MATH_X_{stats.currentLevel.toString().padStart(3, '0')}</p>
+                            <p className="text-[8px] text-white font-mono tracking-widest uppercase">Sync: {localStorage.getItem('mathmaster_offline_user') ? 'MODO LOCAL' : 'CÉREBRO NUVEM'}</p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => setGameState(GameState.HOME)}
+                        className="group flex flex-col items-end gap-2 transition-all"
+                    >
+                        <span className="text-[10px] uppercase font-display font-black text-red-500/50 group-hover:text-red-500 tracking-widest leading-none">Status</span>
+                        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-xl text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
+                            <span className="text-[10px] uppercase font-display font-bold tracking-widest">Abortar Missão</span>
+                            <span className="material-symbols-outlined text-sm">logout</span>
+                        </div>
+                    </button>
                 </div>
-                <button
-                    onClick={() => setGameState(GameState.HOME)}
-                    className="text-[10px] uppercase font-display font-bold text-white/30 hover:text-white transition-colors flex items-center gap-2"
-                >
-                    Abandonar Missão <span className="material-symbols-outlined text-sm">logout</span>
-                </button>
             </footer>
 
             {/* Bottom Indicator */}

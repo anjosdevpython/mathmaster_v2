@@ -140,8 +140,18 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
                                         {lvl.name}
                                     </div>
 
-                                    {isUnlocked && !isSelected && (
-                                        <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                                    {/* Status Indicators */}
+                                    {isUnlocked ? (
+                                        isSelected ? (
+                                            <div className="absolute -top-1 -right-1 flex h-3 w-3">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                                            </div>
+                                        ) : (
+                                            <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary/30 rounded-full" />
+                                        )
+                                    ) : (
+                                        <div className="absolute top-2 right-2 w-1 h-1 bg-white/5 rounded-full" />
                                     )}
                                 </button>
                             );
