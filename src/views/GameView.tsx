@@ -175,7 +175,7 @@ export const GameView: React.FC<GameViewProps> = ({
                 <div className="relative group w-full flex flex-col items-center gap-4 sm:gap-8">
                     <div className="text-center relative">
                         <p className="text-[8px] uppercase tracking-[0.3em] text-primary/40 mb-1 font-mono">Maestria Mental</p>
-                        <h1 className={`text-5xl sm:text-7xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
+                        <h1 className={`text-4xl sm:text-7xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
                             {currentQuestion.text.split(' ').map((part, i) => (
                                 <span key={i} className={i === 1 ? 'text-primary px-2' : ''}>{part}</span>
                             ))}
@@ -194,7 +194,7 @@ export const GameView: React.FC<GameViewProps> = ({
                                 timeLeft <= 3 ? 'border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.3)]' :
                                     timeLeft <= 5 ? 'border-orange-400/40' :
                                         getStreakBorder()
-                                } rounded-2xl p-4 py-10 text-6xl sm:text-7xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
+                                } rounded-2xl p-4 py-6 sm:py-10 text-5xl sm:text-7xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
                             autoFocus
                         />
                         <button
@@ -278,9 +278,9 @@ export const GameView: React.FC<GameViewProps> = ({
             )}
 
             {successMessage && (
-                <div className="fixed top-32 left-0 right-0 z-[200] flex justify-center pointer-events-none px-4">
-                    <div className="gradient-button text-white px-10 py-5 rounded-[2.5rem] font-black text-2xl shadow-neon animate-pop-in flex items-center gap-4">
-                        <span className="material-symbols-outlined text-3xl">bolt</span>
+                <div className="fixed top-24 sm:top-32 left-0 right-0 z-[200] flex justify-center pointer-events-none px-4">
+                    <div className="gradient-button text-white px-6 sm:px-10 py-3 sm:py-5 rounded-2xl sm:rounded-[2.5rem] font-black text-lg sm:text-2xl shadow-neon animate-pop-in flex items-center gap-3 sm:gap-4">
+                        <span className="material-symbols-outlined text-2xl sm:text-3xl">bolt</span>
                         <span className="tracking-tighter">{successMessage}</span>
                     </div>
                 </div>

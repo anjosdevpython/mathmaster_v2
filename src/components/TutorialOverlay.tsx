@@ -46,30 +46,30 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
             <div className="relative w-full max-w-2xl bg-slate-900 border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
 
                 {/* Header */}
-                <header className="flex justify-between items-center p-6 border-b border-white/5 bg-slate-950/30 shrink-0">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                            <span className="material-symbols-outlined text-xl">{aiExplanation ? 'psychology' : 'school'}</span>
+                <header className="flex justify-between items-center p-4 sm:p-6 border-b border-white/5 bg-slate-950/30 shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <span className="material-symbols-outlined text-base sm:text-xl">{aiExplanation ? 'psychology' : 'school'}</span>
                         </div>
                         <div>
-                            <h2 className="text-sm font-display font-black text-white uppercase tracking-wider leading-none">
+                            <h2 className="text-[10px] sm:text-sm font-display font-black text-white uppercase tracking-wider leading-none">
                                 {aiExplanation ? 'Mestre Allan Anjos' : 'Protocolo de Treino'}
                             </h2>
-                            <p className="text-[9px] font-display font-bold text-slate-500 uppercase tracking-widest mt-1">
+                            <p className="text-[7.5px] sm:text-[9px] font-display font-bold text-slate-500 uppercase tracking-widest mt-0.5 sm:mt-1">
                                 {aiExplanation ? 'Mentoria Neural Ativa' : 'Aprimoramento de Habilidades'}
                             </p>
                         </div>
                     </div>
                     <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
-                        <span className="material-symbols-outlined">close</span>
+                        <span className="material-symbols-outlined text-xl sm:text-2xl">close</span>
                     </button>
                 </header>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col min-h-0">
                     {/* Optional Visual Section - Only if enough space or not AI */}
                     {!aiExplanation && question && (
-                        <div className="p-8 bg-slate-950/20 flex items-center justify-center border-b border-white/5 shrink-0">
-                            <div className="scale-100">
+                        <div className="p-4 sm:p-8 bg-slate-950/20 flex items-center justify-center border-b border-white/5 shrink-0">
+                            <div className="scale-75 sm:scale-100">
                                 {question.opType === 'power' && <PowerVisual value={question.values[0]} />}
                                 {question.opType === 'sqrt' && <SqrtVisual target={question.values[0]} answer={question.answer} />}
                             </div>
@@ -77,20 +77,20 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
                     )}
 
                     {/* Content Section */}
-                    <div className="p-8 flex flex-col gap-6">
+                    <div className="p-5 sm:p-8 flex flex-col gap-6">
                         <div key={stepIndex} className="animate-pop-in space-y-4">
                             <div className="flex items-center gap-3">
-                                <span className="text-[10px] font-display font-black text-primary px-2 py-1 rounded bg-primary/10 border border-primary/20">PASSO {stepIndex + 1}</span>
+                                <span className="text-[9px] sm:text-[10px] font-display font-black text-primary px-2 py-1 rounded bg-primary/10 border border-primary/20">PASSO {stepIndex + 1}</span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
 
-                            <div className={`font-sans leading-relaxed text-slate-100 ${aiExplanation ? 'text-base' : 'text-lg font-semibold'}`}>
+                            <div className={`font-sans leading-relaxed text-slate-100 ${aiExplanation ? 'text-sm sm:text-base' : 'text-base sm:text-lg font-semibold'}`}>
                                 {aiExplanation ? (
-                                    <div className="space-y-4 whitespace-pre-wrap">
+                                    <div className="space-y-3 sm:space-y-4 whitespace-pre-wrap">
                                         {steps[stepIndex].split(/(\[[^\]]+\])/g).map((part, i) => {
                                             if (part.startsWith('[') && part.endsWith(']')) {
                                                 return (
-                                                    <div key={i} className="text-primary font-display font-black text-xs tracking-[0.2em] uppercase mt-6 mb-2 first:mt-0 pb-1 border-b border-primary/10">
+                                                    <div key={i} className="text-primary font-display font-black text-[10px] sm:text-xs tracking-[0.2em] uppercase mt-4 sm:mt-6 mb-2 first:mt-0 pb-1 border-b border-primary/10">
                                                         {part.slice(1, -1)}
                                                     </div>
                                                 );

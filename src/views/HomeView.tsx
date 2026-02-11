@@ -46,7 +46,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
     };
 
     return (
-        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-7xl mx-auto h-full px-6 py-4 lg:px-8 lg:py-8 justify-between gap-8 lg:gap-12 animate-pop-in overflow-hidden">
+        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-7xl mx-auto h-full px-4 py-4 lg:px-8 lg:py-8 justify-between gap-6 lg:gap-12 animate-pop-in overflow-hidden overflow-y-auto lg:overflow-hidden custom-scrollbar">
             {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
             {/* Left Column: Branding & Stats (Desktop) */}
@@ -105,8 +105,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
             </div>
 
             {/* Right Column: Interaction Panel */}
-            <div className="flex flex-col items-center lg:w-[480px] space-y-8">
-                <div className="w-full bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+            <div className="flex flex-col items-center lg:w-[480px] space-y-6 lg:space-y-8 pb-10 lg:pb-0">
+                <div className="w-full bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl relative overflow-hidden group">
                     <button
                         onClick={() => setShowAuth(true)}
                         className="absolute top-4 right-4 z-20 p-3 rounded-2xl border border-white/5 hover:border-primary/30 bg-slate-900/60 hover:bg-slate-800 backdrop-blur-xl transition-all duration-300 group/avatar cursor-pointer hover:scale-105 active:scale-95"
@@ -149,21 +149,21 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                             <button
                                 onClick={() => setGameState(GameState.LEVEL_SELECT)}
-                                className="w-full h-18 stitch-btn stitch-btn-primary"
+                                className="w-full h-14 sm:h-18 stitch-btn stitch-btn-primary"
                             >
-                                <span className="font-display font-bold text-xl tracking-[0.15em]">COMEÇAR JOGO</span>
-                                <span className="material-symbols-outlined text-2xl">rocket_launch</span>
+                                <span className="font-display font-bold text-lg sm:text-xl tracking-[0.15em]">COMEÇAR JOGO</span>
+                                <span className="material-symbols-outlined text-xl sm:text-2xl">rocket_launch</span>
                             </button>
 
                             <button
                                 onClick={() => startLevel(1, true, true, timedTraining)}
-                                className="w-full h-18 stitch-btn stitch-btn-outline"
+                                className="w-full h-14 sm:h-18 stitch-btn stitch-btn-outline"
                             >
-                                <span className="font-display font-bold text-base tracking-[0.15em]">MODO TREINO</span>
-                                <span className="material-symbols-outlined text-slate-400 text-xl">psychology</span>
+                                <span className="font-display font-bold text-sm sm:text-base tracking-[0.15em]">MODO TREINO</span>
+                                <span className="material-symbols-outlined text-slate-400 text-lg sm:text-xl">psychology</span>
                             </button>
 
                             <button

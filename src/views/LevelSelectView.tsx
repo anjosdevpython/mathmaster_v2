@@ -76,19 +76,19 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
     }, [previewLevel]);
 
     return (
-        <div className="relative z-10 flex flex-col w-full max-w-4xl mx-auto h-full px-6 py-8 gap-8 animate-pop-in">
+        <div className="relative z-10 flex flex-col w-full max-w-4xl mx-auto h-full px-4 sm:px-6 py-4 sm:py-8 gap-6 sm:gap-8 animate-pop-in">
             {/* Header */}
             <header className="flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setGameState(GameState.HOME)}
-                        className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-900/40 border border-slate-800/50 hover:bg-slate-800 transition-all text-primary"
+                        className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl sm:rounded-2xl bg-slate-900/40 border border-slate-800/50 hover:bg-slate-800 transition-all text-primary"
                     >
-                        <span className="material-symbols-outlined">chevron_left</span>
+                        <span className="material-symbols-outlined text-sm sm:text-base">chevron_left</span>
                     </button>
                     <div>
-                        <h2 className="text-2xl font-display font-black tracking-tighter text-white">SELEÇÃO DE SETOR</h2>
-                        <p className="text-[10px] font-display font-medium text-slate-500 uppercase tracking-widest">Protocolo de Ascensão Vektra</p>
+                        <h2 className="text-xl sm:text-2xl font-display font-black tracking-tighter text-white">SELEÇÃO DE SETOR</h2>
+                        <p className="text-[8px] sm:text-[10px] font-display font-medium text-slate-500 uppercase tracking-widest">Protocolo de Ascensão Vektra</p>
                     </div>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full">
@@ -99,13 +99,13 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
 
             <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
                 {/* Level Detail Panel */}
-                <div className="w-full lg:w-80 flex flex-col bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] p-8 items-center justify-between text-center shrink-0 shadow-2xl relative overflow-hidden">
+                <div className="w-full lg:w-80 flex flex-col bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 items-center justify-between text-center shrink-0 shadow-2xl relative overflow-hidden">
                     <div className={`absolute inset-0 bg-gradient-to-b ${isPreviewUnlocked ? 'from-primary/5' : 'from-red-500/5'} to-transparent opacity-50`} />
 
                     <div className="z-10 w-full flex flex-col items-center">
-                        <div className={`relative mb-8 transition-all duration-500 ${isPreviewUnlocked ? 'scale-110' : 'grayscale opacity-30 scale-100'}`}>
+                        <div className={`relative mb-4 sm:mb-8 transition-all duration-500 ${isPreviewUnlocked ? 'scale-100 sm:scale-110' : 'grayscale opacity-30 scale-100'}`}>
                             <div className={`absolute inset-0 blur-3xl rounded-full transform scale-150 animate-pulse ${isPreviewUnlocked ? 'bg-primary/20' : 'bg-red-500/10'}`} />
-                            <span className={`material-symbols-outlined text-8xl ${isPreviewUnlocked ? 'text-white glow-text' : 'text-slate-600'}`}>
+                            <span className={`material-symbols-outlined text-6xl sm:text-8xl ${isPreviewUnlocked ? 'text-white glow-text' : 'text-slate-600'}`}>
                                 {isPreviewUnlocked ? currentIcon : 'lock'}
                             </span>
                         </div>
