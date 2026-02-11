@@ -48,6 +48,7 @@ serve(async (req) => {
                     },
                     body: JSON.stringify({
                         model: model,
+                        max_tokens: 300, // Limite para acelerar a resposta
                         messages: [
                             {
                                 role: "system",

@@ -26,7 +26,7 @@ interface GameViewProps {
     generateAiExplanation: () => Promise<void>;
 }
 
-export const GameView: React.FC<GameViewProps> = ({
+export const GameView: React.FC<GameViewProps> = React.memo(({
     gameState, stats, currentQuestion, timeLeft, userInput, setUserInput,
     handleSubmit, feedback, setGameState, showExplanation, setShowExplanation,
     visibleSteps, isFlashing, nextQ, aiExplanation, isLoadingAI, successMessage,
@@ -288,4 +288,4 @@ export const GameView: React.FC<GameViewProps> = ({
             )}
         </div>
     );
-};
+});

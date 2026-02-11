@@ -10,7 +10,7 @@ interface HomeViewProps {
     setSelectedOps: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, selectedOps, setSelectedOps }) => {
+export const HomeView: React.FC<HomeViewProps> = React.memo(({ setGameState, startLevel, selectedOps, setSelectedOps }) => {
     const [showAuth, setShowAuth] = useState(false);
     const [userLabel, setUserLabel] = useState('');
     const [timedTraining, setTimedTraining] = useState(false);
@@ -202,4 +202,4 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
 
         </div>
     );
-};
+});

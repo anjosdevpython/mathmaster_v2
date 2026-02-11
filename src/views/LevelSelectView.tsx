@@ -52,7 +52,7 @@ const LEVEL_ICONS = [
     "crown"                // 30: MASTER
 ];
 
-export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, startLevel, unlockedLevel }) => {
+export const LevelSelectView: React.FC<LevelSelectViewProps> = React.memo(({ setGameState, startLevel, unlockedLevel }) => {
     const [previewLevel, setPreviewLevel] = useState(unlockedLevel);
     const currentPreview = LEVELS[previewLevel - 1] || LEVELS[0];
     const currentIcon = LEVEL_ICONS[previewLevel - 1] || "question_mark";
@@ -209,4 +209,4 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
             </div>
         </div>
     );
-};
+});

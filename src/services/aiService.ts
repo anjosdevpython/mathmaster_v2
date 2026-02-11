@@ -7,8 +7,16 @@ const STATIC_FALLBACKS: Record<string, string> = {
     '/': "[O QUE HOUVE]\n\nMestre offline, mas a técnica ninja está aqui.\n\n[MACETE DO ALLAN]\n\nDividir por 5 é o oposto da multiplicação: dobre o número e mova a vírgula uma casa para a esquerda.\n\n[MISSÃO]\n\nPrecisão é a chave do VektraMind."
 };
 
+const AICache = new Map<string, string>();
+
 export const aiService = {
     async explainError(question: string, correctAnswer: number, userAnswer: string) {
+        const cacheKey = `${question}:${correctAnswer}:${userAnswer}`;
+        if (AICache.has(cacheKey)) {
+            console.log("[AI Cache] Hit!");
+            return AICache.get(cacheKey)!;
+        }
+
         // Detectar o operador para o fallback
         const operator = question.includes('+') ? '+' :
             question.includes('-') ? '-' :
@@ -22,12 +30,14 @@ export const aiService = {
                 body: { question, correctAnswer, userAnswer }
             });
 
-            if (error || !data?.choices?.[0]?.message?.content) {
-                console.warn("AI Service error:", error);
-                return `[O QUE HOUVE]\n\nO mestre não pôde responder por um erro técnico.\n\nDetalhe: ${error?.message || 'Resposta da IA vazia'}\n\n[MISSÃO]\n\nVerifique as variáveis de ambiente e o saldo da API.`;
+            if (data?.choices?.[0]?.message?.content) {
+                const content = data.choices[0].message.content;
+                AICache.set(cacheKey, content);
+                return content;
             }
 
-            return data.choices[0].message.content;
+            console.warn("AI Service error:", error);
+            return `[O QUE HOUVE]\n\nO mestre não pôde responder por um erro técnico.\n\nDetalhe: ${error?.message || 'Resposta da IA vazia'}\n\n[MISSÃO]\n\nVerifique as variáveis de ambiente e o saldo da API.`;
         } catch (error: any) {
             console.error("AI Service failure, using fallback:", error);
             // Se o erro for crítico, mostra o erro no lugar do macete para debug
