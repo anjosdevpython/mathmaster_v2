@@ -55,12 +55,12 @@ export const GameView: React.FC<GameViewProps> = ({
     return (
         <div className="relative w-full max-w-[430px] h-full mx-auto overflow-hidden bg-background-dark/40 shadow-2xl flex flex-col border-x border-primary/10 animate-pop-in">
             {/* HUD / Header Area */}
-            <header className="relative z-10 px-6 pt-12 flex flex-col gap-4">
+            <header className="relative z-10 px-6 pt-6 flex flex-col gap-4 shrink-0">
                 <div className="flex justify-between items-center mb-1">
                     <div className="flex flex-col">
                         <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Progresso</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-white/80">
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs font-medium text-white/80">
                                 {isTraining ? 'Training Mode' : `Questão ${stats.currentQuestionIndex + 1}/10`}
                             </span>
                         </div>
@@ -70,8 +70,8 @@ export const GameView: React.FC<GameViewProps> = ({
                             <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Tempo</span>
                             <div className={`flex items-center gap-1 tabular-nums transition-colors ${timeLeft <= 5 ? 'text-red-400' : 'text-primary'}`}>
                                 <span className="material-icons text-sm">schedule</span>
-                                <span className="text-lg font-bold glow-text">00:{time.s}</span>
-                                <span className="text-xs opacity-50">.{time.ms}</span>
+                                <span className="text-base font-bold glow-text">00:{time.s}</span>
+                                <span className="text-[10px] opacity-50">.{time.ms}</span>
                             </div>
                         </div>
                     )}
@@ -79,7 +79,7 @@ export const GameView: React.FC<GameViewProps> = ({
 
                 {/* Progress Bar */}
                 {!isTraining && (
-                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-primary transition-all duration-500 shadow-[0_0_10px_#10B981]"
                             style={{ width: `${progress}%` }}
@@ -88,23 +88,23 @@ export const GameView: React.FC<GameViewProps> = ({
                 )}
 
                 {/* Points & Stats HUD */}
-                <div className="flex justify-between items-center mt-2">
-                    <div className="glass-panel px-4 py-1.5 rounded-full flex items-center gap-3 border-primary/20 backdrop-blur-md">
+                <div className="flex justify-between items-center mt-1">
+                    <div className="glass-panel px-3 py-1 rounded-full flex items-center gap-2 border-primary/20 backdrop-blur-md">
                         <div className="flex flex-col">
-                            <span className="text-[8px] uppercase tracking-tighter text-slate-400 leading-none">Pontos</span>
-                            <span className="text-primary font-bold tracking-tight text-xs leading-none mt-1">{stats.score.toLocaleString()}</span>
+                            <span className="text-[7px] uppercase tracking-tighter text-slate-400 leading-none">Pontos</span>
+                            <span className="text-primary font-bold tracking-tight text-[10px] leading-none mt-1">{stats.score.toLocaleString()}</span>
                         </div>
-                        <div className="h-4 w-[1px] bg-white/10" />
+                        <div className="h-3 w-[1px] bg-white/10" />
                         <div className="flex flex-col">
-                            <span className="text-[8px] uppercase tracking-tighter text-slate-400 leading-none">Combo</span>
-                            <span className="text-success font-bold tracking-tight text-xs leading-none mt-1">x{stats.correctInLevel}</span>
+                            <span className="text-[7px] uppercase tracking-tighter text-slate-400 leading-none">Combo</span>
+                            <span className="text-success font-bold tracking-tight text-[10px] leading-none mt-1">x{stats.correctInLevel}</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div
                                 key={i}
-                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-8 bg-primary shadow-[0_0_8px_#10B981]' : 'w-2 bg-white/10'}`}
+                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-6 bg-primary shadow-[0_0_8px_#10B981]' : 'w-1.5 bg-white/10'}`}
                             />
                         ))}
                     </div>
@@ -112,22 +112,21 @@ export const GameView: React.FC<GameViewProps> = ({
             </header>
 
             {/* Main Problem Area */}
-            <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-8">
-                <div className="relative group perspective-1000">
-                    <div className="absolute -top-16 -left-16 w-32 h-32 border-t-2 border-l-2 border-primary/20 rounded-tl-[3rem] pointer-events-none" />
-                    <div className="absolute -bottom-16 -right-16 w-32 h-32 border-b-2 border-r-2 border-primary/20 rounded-br-[3rem] pointer-events-none" />
+            <main className="relative z-10 flex-grow flex flex-col items-center justify-center px-8 min-h-0 py-4">
+                <div className="relative group perspective-1000 w-full flex flex-col items-center">
+                    <div className="absolute -top-8 -left-8 w-16 h-16 border-t-2 border-l-2 border-primary/20 rounded-tl-2xl pointer-events-none" />
+                    <div className="absolute -bottom-8 -right-8 w-16 h-16 border-b-2 border-r-2 border-primary/20 rounded-br-2xl pointer-events-none" />
 
-                    <div className="text-center relative">
-                        <p className="text-[10px] uppercase tracking-[0.4em] text-primary/40 mb-4 font-mono">Maestria Mental</p>
-                        <h1 className={`text-7xl md:text-8xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
+                    <div className="text-center relative mb-4">
+                        <p className="text-[9px] uppercase tracking-[0.4em] text-primary/40 mb-2 font-mono">Maestria Mental</p>
+                        <h1 className={`text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white glow-text transition-all duration-300 ${isFlashing ? 'scale-110 text-red-500' : 'scale-100'}`}>
                             {currentQuestion.text.split(' ').map((part, i) => (
                                 <span key={i} className={i === 1 ? 'text-primary px-2' : ''}>{part}</span>
                             ))}
                         </h1>
-                        <div className="h-1 w-16 bg-primary/30 rounded-full mx-auto mt-12 mb-8" />
                     </div>
 
-                    <div className="w-full relative group">
+                    <div className="w-full relative group max-w-[320px]">
                         <input
                             ref={inputRef}
                             type="number"
@@ -135,35 +134,35 @@ export const GameView: React.FC<GameViewProps> = ({
                             onChange={(e) => setUserInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                             placeholder="?"
-                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-[2.5rem] p-8 text-7xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10`}
+                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-[2rem] p-4 py-6 text-5xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10`}
                             autoFocus
                         />
                         <button
                             onClick={handleSubmit}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-primary text-background-dark rounded-3xl flex items-center justify-center text-3xl shadow-neon hover:scale-105 active:scale-95 transition-all"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-primary text-background-dark rounded-2xl flex items-center justify-center text-xl shadow-neon hover:scale-105 active:scale-95 transition-all"
                         >
                             <span className="material-symbols-outlined font-black">check</span>
                         </button>
                     </div>
 
                     {feedback === 'wrong' && (
-                        <div className="absolute -bottom-32 left-0 right-0 flex flex-col sm:flex-row items-center gap-4 animate-pop-in">
+                        <div className="mt-8 w-full flex flex-col sm:flex-row items-center gap-3 animate-pop-in">
                             <button
                                 onClick={() => setShowExplanation(true)}
                                 disabled={isLoadingAI}
-                                className="flex-1 stitch-btn stitch-btn-primary w-full"
+                                className="flex-1 stitch-btn stitch-btn-primary w-full py-3"
                             >
                                 {isLoadingAI ? (
-                                    <><span className="material-symbols-outlined animate-spin text-xl">sync</span> ANALISANDO...</>
+                                    <><span className="material-symbols-outlined animate-spin text-sm">sync</span> ANALISANDO...</>
                                 ) : (
-                                    <><span className="material-symbols-outlined text-xl">school</span> MACETE DO MESTRE</>
+                                    <><span className="material-symbols-outlined text-sm">school</span> MACETE DO MESTRE</>
                                 )}
                             </button>
                             <button
                                 onClick={nextQ}
-                                className="flex-1 stitch-btn stitch-btn-outline w-full"
+                                className="flex-1 stitch-btn stitch-btn-outline w-full py-3"
                             >
-                                <span className="material-symbols-outlined text-xl">fast_forward</span> PULAR
+                                <span className="material-symbols-outlined text-sm">fast_forward</span> PULAR
                             </button>
                         </div>
                     )}
@@ -171,7 +170,7 @@ export const GameView: React.FC<GameViewProps> = ({
             </main>
 
             {/* Footer Meta Info Area */}
-            <footer className="relative z-10 px-8 pb-12 w-full">
+            <footer className="relative z-10 px-8 pb-8 w-full shrink-0">
                 <div className="flex justify-between items-end">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
