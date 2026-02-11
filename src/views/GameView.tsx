@@ -23,13 +23,14 @@ interface GameViewProps {
     isLoadingAI: boolean;
     successMessage: string | null;
     timedTraining?: boolean;
+    generateAiExplanation: () => Promise<void>;
 }
 
 export const GameView: React.FC<GameViewProps> = ({
     gameState, stats, currentQuestion, timeLeft, userInput, setUserInput,
     handleSubmit, feedback, setGameState, showExplanation, setShowExplanation,
     visibleSteps, isFlashing, nextQ, aiExplanation, isLoadingAI, successMessage,
-    timedTraining
+    timedTraining, generateAiExplanation
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const isTraining = gameState === GameState.TRAINING;
@@ -210,12 +211,12 @@ export const GameView: React.FC<GameViewProps> = ({
                     {feedback === 'wrong' && (
                         <div className="w-full flex flex-col sm:flex-row items-center gap-2 sm:gap-3 animate-pop-in max-w-[280px] sm:max-w-[320px]">
                             <button
-                                onClick={() => setShowExplanation(true)}
+                                onClick={generateAiExplanation}
                                 disabled={isLoadingAI}
                                 className="flex-1 stitch-btn stitch-btn-primary w-full py-2 sm:py-3 text-[10px] sm:text-xs"
                             >
                                 {isLoadingAI ? (
-                                    <><span className="material-symbols-outlined animate-spin text-[10px] sm:text-sm">sync</span> ANALISANDO...</>
+                                    <><span className="material-symbols-outlined animate-spin text-[10px] sm:text-sm">sync</span> SINCRONIZANDO...</>
                                 ) : (
                                     <><span className="material-symbols-outlined text-[10px] sm:text-sm">school</span> MACETE DO MESTRE</>
                                 )}

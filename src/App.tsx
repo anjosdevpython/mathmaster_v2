@@ -149,17 +149,30 @@ const App: React.FC = () => {
       setIsFlashing(true);
       setTimeout(() => setIsFlashing(false), 500);
 
-      setIsLoadingAI(true);
-      aiService.explainError(currentQuestion.text, currentQuestion.answer, userInput)
-        .then(explanation => {
-          setAiExplanation(explanation);
-          setIsLoadingAI(false);
-        });
-
       if (gameState !== GameState.TRAINING) {
         setStats(p => ({ ...p, lives: p.lives - 1, perfectLevel: false, streak: 0 }));
         if (stats.lives <= 1) setGameState(GameState.GAME_OVER);
       }
+    }
+  };
+
+  const generateAiExplanation = async () => {
+    if (!currentQuestion || isLoadingAI) return;
+
+    setIsLoadingAI(true);
+    setShowExplanation(true); // Já abre o modal com loading
+
+    try {
+      const explanation = await aiService.explainError(
+        currentQuestion.text,
+        currentQuestion.answer,
+        userInput || "Tempo Esgotado"
+      );
+      setAiExplanation(explanation);
+    } catch (error) {
+      setAiExplanation("Erro ao carregar protocolo neural. Tente novamente.");
+    } finally {
+      setIsLoadingAI(false);
     }
   };
 
@@ -204,13 +217,6 @@ const App: React.FC = () => {
     setFeedback('wrong');
     setIsFlashing(true);
     setTimeout(() => setIsFlashing(false), 500);
-
-    setIsLoadingAI(true);
-    aiService.explainError(currentQuestion.text, currentQuestion.answer, "Tempo Esgotado")
-      .then(explanation => {
-        setAiExplanation(explanation);
-        setIsLoadingAI(false);
-      });
   };
 
   return (
@@ -251,6 +257,7 @@ const App: React.FC = () => {
             visibleSteps={visibleSteps} isFlashing={isFlashing} nextQ={nextQ}
             aiExplanation={aiExplanation} isLoadingAI={isLoadingAI}
             successMessage={successMessage} timedTraining={timedTraining}
+            generateAiExplanation={generateAiExplanation}
           />
         )}
 
