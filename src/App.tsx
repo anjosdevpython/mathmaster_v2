@@ -12,7 +12,7 @@ import { supabase } from './lib/supabase';
 import confetti from 'canvas-confetti';
 
 const App: React.FC = () => {
-  useEffect(() => { console.log("MathMaster Redesign v3.0.0 - Neural Sync"); }, []);
+  useEffect(() => { console.log("Vektra Mind Redesign v4.0.0 - Neural Sync"); }, []);
 
   const [gameState, setGameState] = useState<GameState>(GameState.HOME);
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
@@ -141,7 +141,7 @@ const App: React.FC = () => {
     PersistenceService.init();
     const updateTitle = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      document.title = user?.user_metadata?.username ? `MathMaster | ${user.user_metadata.username}` : `MathMaster`;
+      document.title = user?.user_metadata?.username ? `Vektra Mind | ${user.user_metadata.username}` : `Vektra Mind`;
     };
     updateTitle();
     const { data: authListener } = supabase.auth.onAuthStateChange(() => updateTitle());
@@ -166,7 +166,7 @@ const App: React.FC = () => {
       <div className="fixed inset-0 pointer-events-none star-bg z-0 opacity-40"></div>
       <div className="fixed inset-0 pointer-events-none cyber-grid z-0 opacity-20"></div>
       <div className="fixed top-1/4 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="fixed bottom-1/4 -right-20 w-64 h-64 bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed bottom-1/4 -right-20 w-64 h-64 bg-accent/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <main className={`relative z-10 w-full h-full flex flex-col items-center justify-center border-white/5 ${gameState === GameState.LEVEL_SELECT || gameState === GameState.HOME ? 'max-w-7xl' : 'max-w-[430px] border-x'
         } mx-auto transition-all duration-500`}>
@@ -280,7 +280,7 @@ const App: React.FC = () => {
       <div className="fixed bottom-2 left-1/2 -translate-x-1/2 opacity-20 hidden md:block">
         <div className="flex items-center gap-2">
           <div className="w-1 h-1 bg-primary"></div>
-          <span className="text-[8px] tracking-[0.5em] uppercase font-bold text-primary">MathMaster Protocol v3.0.0</span>
+          <span className="text-[8px] tracking-[0.5em] uppercase font-bold text-primary">Vektra Mind Protocol v4.0.0</span>
           <div className="w-1 h-1 bg-primary"></div>
         </div>
       </div>

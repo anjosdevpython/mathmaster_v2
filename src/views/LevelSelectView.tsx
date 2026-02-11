@@ -53,7 +53,7 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
                     </button>
                     <div>
                         <h2 className="text-2xl font-display font-black tracking-tighter text-white">SELEÇÃO DE SETOR</h2>
-                        <p className="text-[10px] font-display font-medium text-slate-500 uppercase tracking-widest">Protocolo de Ascensão Neural</p>
+                        <p className="text-[10px] font-display font-medium text-slate-500 uppercase tracking-widest">Protocolo de Ascensão Vektra</p>
                     </div>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full">

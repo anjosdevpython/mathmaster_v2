@@ -1,7 +1,7 @@
 {
-  "name": "mathmaster---mental-challenge",
+  "name": "vektra-mind---neural-math",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "homepage": "https://anjosdevpython.github.io/mathmaster_v2",
   "scripts": {

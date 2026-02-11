@@ -16,7 +16,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
 
     useEffect(() => {
         const checkUser = async () => {
-            const offlineUser = localStorage.getItem('mathmaster_offline_user');
+            const offlineUser = localStorage.getItem('vektramind_offline_user');
             if (offlineUser) {
                 setUserLabel(offlineUser.toUpperCase());
                 return;
@@ -45,54 +45,69 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
     };
 
     return (
-        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-7xl mx-auto h-full px-8 py-12 lg:items-center justify-between gap-12 animate-pop-in">
+        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-7xl mx-auto h-full px-6 py-6 lg:px-8 lg:py-12 lg:items-center justify-between gap-8 lg:gap-12 animate-pop-in overflow-y-auto">
             {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
             {/* Left Column: Branding & Stats (Desktop) */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 lg:w-1/2">
-                <header className="w-full flex flex-col md:flex-row lg:flex-col justify-between items-center lg:items-start gap-6">
-                    <div className="flex flex-col items-center lg:items-start space-y-4">
-                        <div className="relative inline-block">
-                            <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tighter flex flex-wrap items-center justify-center lg:justify-start">
-                                <span className="text-white">MATH</span>
-                                <span className="text-primary glow-text ml-2">MASTER</span>
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:w-1/2 flex-1 justify-center py-4 relative">
+                <header className="w-full flex flex-col items-center lg:items-start mb-8 lg:mb-12">
+                    <div className="flex flex-col items-center lg:items-start space-y-2">
+                        <div className="relative inline-block w-full max-w-[200px] md:max-w-[300px] lg:max-w-[400px] transition-all duration-700 hover:scale-[1.02]">
+                            {/* Logo Image */}
+                            <img
+                                src="./logo.png"
+                                alt="Vektra Mind"
+                                className="w-full h-auto object-contain drop-shadow-[0_0_60px_rgba(34,211,238,0.2)] animate-pulse-slow"
+                                onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget.parentElement?.querySelector('.fallback-title');
+                                    if (fallback) fallback.classList.remove('hidden');
+                                }}
+                            />
+                            {/* Fallback Static Title */}
+                            <h1 className="fallback-title hidden font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tighter items-center justify-center lg:justify-start">
+                                <span className="text-white">VEKTRA</span>
+                                <span className="text-primary glow-text ml-2">MIND</span>
                             </h1>
                         </div>
-                        <p className="text-xs md:text-sm tracking-[0.4em] font-display font-medium text-slate-400 uppercase">
-                            Matemática Mental de Alta Performance
+                        <p className="text-[9px] md:text-[11px] tracking-[0.6em] font-display font-black text-primary/50 uppercase pl-1">
+                            Alta Eficiência em Matemática Neural
                         </p>
                     </div>
+                </header>
 
+                <div className="flex flex-col items-center lg:items-start space-y-10">
+                    <div className="hidden lg:flex flex-col space-y-6">
+                        <div className="flex items-center gap-6 group">
+                            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-all">
+                                <span className="material-symbols-outlined text-primary text-3xl">terminal</span>
+                            </div>
+                            <div>
+                                <h4 className="font-display font-black text-white text-base tracking-tight">CÉREBRO ATIVO</h4>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Protocolo Vektra Mind v3.0</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-6 group">
+                            <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center group-hover:bg-accent/20 transition-all">
+                                <span className="material-symbols-outlined text-accent text-3xl">monitoring</span>
+                            </div>
+                            <div>
+                                <h4 className="font-display font-black text-white text-base tracking-tight">ALTA PERFORMANCE</h4>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Sincronização Neural em tempo real</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Login Button moved to a more accessible but non-blocking spot */}
                     <button
                         onClick={() => setShowAuth(true)}
-                        className="group relative flex items-center gap-3 bg-slate-900/60 backdrop-blur-2xl border border-white/10 px-6 py-3 rounded-2xl hover:bg-slate-800 transition-all text-slate-400 hover:text-white shadow-2xl lg:mt-4"
+                        className="group relative flex items-center gap-3 bg-slate-950/40 backdrop-blur-2xl border border-white/5 hover:border-primary/30 px-6 py-3 rounded-2xl hover:bg-slate-900 transition-all text-slate-400 hover:text-white shadow-2xl"
                     >
                         <span className="text-[10px] font-display font-bold tracking-widest uppercase">{userLabel}</span>
                         <span className="material-symbols-outlined text-xl">person</span>
                         <div className="absolute inset-0 rounded-2xl border border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                     </button>
-                </header>
-
-                <div className="hidden lg:flex flex-col space-y-6 pt-8">
-                    <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-primary text-3xl">terminal</span>
-                        </div>
-                        <div>
-                            <h4 className="font-display font-black text-white text-lg tracking-tight">SISTEMA ATIVO</h4>
-                            <p className="text-xs text-slate-500 uppercase tracking-widest">Protocolo de Treinamento Neural v3.0</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-neon-cyan/10 border border-neon-cyan/20 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-neon-cyan text-3xl">monitoring</span>
-                        </div>
-                        <div>
-                            <h4 className="font-display font-black text-white text-lg tracking-tight">ALTA EFICIÊNCIA</h4>
-                            <p className="text-xs text-slate-500 uppercase tracking-widest">Otimização de Cálculo em tempo real</p>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="block lg:hidden w-full h-px bg-white/5 my-4"></div>
@@ -161,11 +176,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                 <footer className="w-full flex flex-col items-center space-y-4">
                     <div className="flex items-center gap-6 opacity-30 hover:opacity-100 transition-opacity">
                         <a href="https://allananjos.dev.br" target="_blank" rel="noreferrer" className="text-[10px] tracking-[0.3em] font-display font-black text-white uppercase hover:text-primary transition-colors">
-                            Allan Anjos Developer
+                            Desenvolvido por Allan Anjos
                         </a>
                         <span className="w-1.5 h-1.5 bg-slate-700 rounded-full"></span>
                         <p className="text-[10px] tracking-[0.3em] font-display font-black text-slate-600 uppercase">
-                            Protocolo v3.0.1
+                            Protocolo v4.0.0
                         </p>
                     </div>
                 </footer>

@@ -81,7 +81,7 @@ export const GameView: React.FC<GameViewProps> = ({
                 {!isTraining && (
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-primary transition-all duration-500 shadow-[0_0_10px_#10B981]"
+                            className="h-full bg-primary transition-all duration-500 shadow-[0_0_10px_#22d3ee]"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -104,7 +104,7 @@ export const GameView: React.FC<GameViewProps> = ({
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div
                                 key={i}
-                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-5 bg-primary shadow-[0_0_8px_#10B981]' : 'w-1 bg-white/10'}`}
+                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-5 bg-primary shadow-[0_0_8px_#22d3ee]' : 'w-1 bg-white/10'}`}
                             />
                         ))}
                     </div>
@@ -177,8 +177,8 @@ export const GameView: React.FC<GameViewProps> = ({
                             </p>
                         </div>
                         <div className="flex flex-col gap-1 opacity-20">
-                            <p className="text-[8px] text-white font-mono tracking-widest uppercase">Protocolo: MATH_X_{stats.currentLevel.toString().padStart(3, '0')}</p>
-                            <p className="text-[8px] text-white font-mono tracking-widest uppercase">Sync: {localStorage.getItem('mathmaster_offline_user') ? 'MODO LOCAL' : 'CÉREBRO NUVEM'}</p>
+                            <p className="text-[8px] text-white font-mono tracking-widest uppercase">Protocolo: VEKTRA_M_{stats.currentLevel.toString().padStart(3, '0')}</p>
+                            <p className="text-[8px] text-white font-mono tracking-widest uppercase">Sync: {localStorage.getItem('vektramind_offline_user') ? 'MODO LOCAL' : 'CÉREBRO NUVEM'}</p>
                         </div>
                     </div>
 

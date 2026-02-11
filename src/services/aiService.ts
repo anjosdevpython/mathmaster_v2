@@ -16,7 +16,7 @@ export const aiService = {
                 headers: {
                     "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
                     "HTTP-Referer": window.location.origin,
-                    "X-Title": "MathMaster",
+                    "X-Title": "Vektra Mind",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -24,8 +24,8 @@ export const aiService = {
                     messages: [
                         {
                             role: "system",
-                            content: `Você é "Allan Anjos", o professor virtual e mentor de elite do MathMaster. 
-                            Sua especialidade é ensinar MATEMÁTICA MENTAL e MACETES (hacks) que facilitam a vida do aluno.
+                            content: `Você é "Allan Anjos", o professor virtual e mentor de elite do Vektra Mind. 
+                            Sua especialidade é ensinar MATEMÁTICA MENTAL e MACETES (hacks) que facilitam a vida do aluno no protocolo Vektra.
                             
                             Ao explicar:
                             1. Identifique-se como Professor Allan Anjos.

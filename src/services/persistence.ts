@@ -1,7 +1,8 @@
 
 import { GameStats } from '../types';
 
-const STORAGE_KEY = 'mathmaster_save_data';
+const STORAGE_KEY = 'vektramind_save_data';
+const OLD_STORAGE_KEY = 'mathmaster_save_data';
 
 export interface GameSaveData {
     version: number;
@@ -36,18 +37,30 @@ export const PersistenceService = {
             const serialized = JSON.stringify(data);
             localStorage.setItem(STORAGE_KEY, serialized);
         } catch (e) {
-            console.error('Failed to save game data locally:', e);
+            console.error('VektraMind: Failed to save game data locally:', e);
         }
     },
 
     loadLocal(): GameSaveData {
         try {
-            const serialized = localStorage.getItem(STORAGE_KEY);
+            let serialized = localStorage.getItem(STORAGE_KEY);
+
+            // Migração: Se não tem dados Vektra, tenta pegar os antigos MathMaster
+            if (!serialized) {
+                const oldData = localStorage.getItem(OLD_STORAGE_KEY);
+                if (oldData) {
+                    console.log('VektraMind: Migrando dados do MathMaster...');
+                    serialized = oldData;
+                    // Salva com a nova chave para completar migração
+                    localStorage.setItem(STORAGE_KEY, oldData);
+                }
+            }
+
             if (!serialized) return DEFAULT_SAVE;
             const parsed = JSON.parse(serialized);
             return { ...DEFAULT_SAVE, ...parsed };
         } catch (e) {
-            console.error('Failed to load local game data:', e);
+            console.error('VektraMind: Failed to load local game data:', e);
             return DEFAULT_SAVE;
         }
     },

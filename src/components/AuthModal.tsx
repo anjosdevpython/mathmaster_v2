@@ -19,7 +19,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     }, []);
 
     const checkUser = async () => {
-        const offlineId = localStorage.getItem('mathmaster_offline_user');
+        const offlineId = localStorage.getItem('vektramind_offline_user');
         if (offlineId) {
             setUser({ user_metadata: { username: offlineId } });
             setMode('profile');
@@ -38,7 +38,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
     const handleLogout = async () => {
         setLoading(true);
-        localStorage.removeItem('mathmaster_offline_user');
+        localStorage.removeItem('vektramind_offline_user');
         await supabase.auth.signOut();
         window.location.reload();
     };
@@ -54,13 +54,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
         setError(null);
 
         try {
-            console.log(`[AuthMaster] >>> INÍCIO | Modo: ${mode} | User: ${username}`);
-            const email = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@mathmaster.game`;
+            console.log(`[VektraAuth] >>> INÍCIO | Modo: ${mode} | User: ${username}`);
+            const email = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@vektramind.game`;
 
             // Processo direto sem check de sessão para evitar hang
             const authTask = (async () => {
                 if (mode === 'create') {
-                    console.log('[AuthMaster] 1. Tentando registro direto...');
+                    console.log('[VektraAuth] 1. Tentando registro direto...');
                     const { error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
@@ -74,7 +74,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                         throw error;
                     }
                 } else if (mode === 'login') {
-                    console.log('[AuthMaster] 1. Validando login direto...');
+                    console.log('[VektraAuth] 1. Validando login direto...');
                     const { error } = await supabase.auth.signInWithPassword({
                         email: email,
                         password: password,
@@ -82,7 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                     if (error) throw error;
                 }
 
-                console.log('[AuthMaster] 2. Sincronizando dados...');
+                console.log('[VektraAuth] 2. Sincronizando dados...');
                 await PersistenceService.sync();
                 window.location.reload();
             })();
@@ -94,14 +94,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
             onClose();
         } catch (err: any) {
-            console.error('[AuthMaster] ERRO:', err);
+            console.error('[VektraAuth] ERRO:', err);
             const msg = err.message || '';
 
             if (msg.includes('TIMEOUT')) {
-                console.warn('[AuthMaster] Entrando em MODO OFFLINE DE EMERGÊNCIA.');
+                console.warn('[VektraAuth] Entrando em MODO OFFLINE DE EMERGÊNCIA.');
                 alert('CONEXÃO LENTA: O sistema entrará em modo local para você não perder o progresso.');
                 // Salva um usuário fake no localStorage para o app achar que está logado
-                localStorage.setItem('mathmaster_offline_user', username);
+                localStorage.setItem('vektramind_offline_user', username);
                 window.location.reload();
                 return;
             }
@@ -149,7 +149,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                             <div className="p-5 bg-slate-900/50 rounded-2xl border border-white/5 flex justify-between items-center">
                                 <span className="text-[10px] font-display font-bold text-slate-500 uppercase tracking-widest">Sincronização</span>
                                 <span className="text-[10px] font-display font-black text-primary uppercase flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#10B981]"></span>
+                                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#22d3ee]"></span>
                                     Nuvem Estável
                                 </span>
                             </div>

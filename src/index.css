@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --primary: 16 185 129; /* Emerald 500 */
-    --primary-hover: 5 150 105; /* Emerald 600 */
-    --accent: 96 165 250; /* Blue 400 */
-    --neon-cyan: 34 211 238; /* Cyan 400 */
-    --background: 2 6 23; /* Dark Navy/Black from redesign */
+    --primary: 34 211 238; /* Cyan 400 - Logo Primary */
+    --primary-hover: 6 182 212; /* Cyan 500 */
+    --accent: 132 204 22; /* Lime 500 - Logo Accent */
+    --neon-green: 16 185 129; /* Emerald 500 */
+    --background: 2 6 23; /* Dark Navy/Black */
     --surface: 15 23 42; /* Slate 900 */
     --surface-light: 30 41 59; /* Slate 800 */
     --border: 30 41 59;
@@ -23,8 +23,8 @@
   body {
     @apply font-sans antialiased selection:bg-primary/30 selection:text-white;
     background-image: 
-      radial-gradient(circle at 0% 0%, rgba(var(--primary), 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 100% 100%, rgba(var(--accent), 0.05) 0%, transparent 50%);
+      radial-gradient(circle at 0% 0%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(132, 204, 22, 0.08) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -43,17 +43,17 @@
   }
 
   .cyber-grid {
-    background-image: linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
   .glow-text {
-    text-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
   }
 
   .gradient-button {
-    background: linear-gradient(135deg, #10B981 0%, #06b6d4 100%);
+    background: linear-gradient(135deg, #22d3ee 0%, #84cc16 100%);
   }
 
   .glass-panel {
@@ -90,7 +90,7 @@
   }
 
   .shadow-neon {
-    box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.5), 0 4px 6px -2px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 0 20px -3px rgba(34, 211, 238, 0.4), 0 0 10px -2px rgba(132, 204, 22, 0.3);
   }
 
   .stitch-btn-primary {
@@ -126,9 +126,18 @@
     50% { transform: translateY(-15px); }
   }
 
+  @keyframes pulse-slow {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.02); filter: brightness(1.2); }
+  }
+
   @keyframes pulse-glow {
     0%, 100% { opacity: 0.5; filter: blur(40px); }
     50% { opacity: 0.8; filter: blur(60px); }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
   }
 
   /* Hide number input spinners */

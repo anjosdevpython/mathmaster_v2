@@ -13,7 +13,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
     const [stepIndex, setStepIndex] = useState(0);
 
     const defaultSteps = [
-        "Bem-vindo ao MathMaster! Prepare sua mente para desafios de alta performance.",
+        "Bem-vindo ao Vektra Mind! Prepare sua mente para desafios de alta performance.",
         "Escolha as operações que deseja praticar no painel frontal.",
         "Complete os níveis para desbloquear novos setores e aumentar sua capacidade.",
         "Dica: No Modo Treino, você tem tempo infinito para aprender as técnicas."
