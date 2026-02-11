@@ -87,8 +87,21 @@ export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, 
                                     <span className="text-xs font-display font-black text-white">{currentPreview.timePerQuestion}S</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                    <span className="text-[10px] font-display font-bold text-slate-500 uppercase">Fases</span>
+                                    <span className="text-[10px] font-display font-bold text-slate-500 uppercase">Questões</span>
                                     <span className="text-xs font-display font-black text-white">{currentPreview.totalQuestions}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span className="text-[10px] font-display font-bold text-slate-500 uppercase">Operações</span>
+                                    <div className="flex gap-1.5 flex-wrap justify-end">
+                                        {currentPreview.operations.map((op: string) => {
+                                            const symbols: Record<string, string> = { '+': '+', '-': '−', '*': '×', '/': '÷', 'power': 'x²', 'sqrt': '√', 'percentage': '%', 'equation': 'eq', 'fraction': '½' };
+                                            return (
+                                                <span key={op} className="text-[9px] font-display font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-md">
+                                                    {symbols[op] || op}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                                 <button
                                     onClick={() => startLevel(currentPreview.level, true)}
