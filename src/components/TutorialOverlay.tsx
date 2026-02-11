@@ -42,100 +42,79 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ question, aiEx
     }, [stepIndex, steps.length]);
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 bg-slate-950/80 backdrop-blur-2xl animate-pop-in">
-            <div className="relative w-full max-w-5xl h-fit max-h-[90vh] flex flex-col md:flex-row bg-slate-900/60 border border-white/10 rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-3xl animate-pop-in">
+            <div className="relative w-full max-w-2xl bg-slate-900 border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
 
-                {/* Visual Section */}
-                <div className="w-full md:w-[40%] bg-slate-950/40 p-8 flex flex-col items-center justify-center relative overflow-hidden shrink-0">
-                    <div className="absolute top-6 left-6 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary text-sm animate-pulse">
-                            {aiExplanation ? 'psychology' : 'analytics'}
-                        </span>
-                        <span className="text-[10px] font-display font-black text-primary uppercase tracking-[0.2em]">
-                            {aiExplanation ? 'Análise do Mestre' : 'Simulação Neural'}
-                        </span>
-                    </div>
-
-                    <div className="scale-100 transform transition-all duration-700">
-                        {question?.opType === 'power' && <PowerVisual value={question.values[0]} />}
-                        {question?.opType === 'sqrt' && <SqrtVisual target={question.values[0]} answer={question.answer} />}
-                        {(!question || !['power', 'sqrt'].includes(question.opType)) && (
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="text-7xl font-display font-black text-white/10 glow-text select-none">
-                                    {question?.text.split(' ')[1] || '?'}
-                                </div>
-                                <div className="w-16 h-1 bg-primary/20 rounded-full animate-pulse" />
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Content Section */}
-                <div className="flex-1 p-6 sm:p-10 flex flex-col relative bg-gradient-to-br from-slate-900/40 to-transparent min-w-0">
-                    <header className="flex justify-between items-start mb-6 shrink-0">
-                        <div className="space-y-1">
-                            <h2 className="text-2xl font-display font-black text-white tracking-tighter uppercase">
-                                {aiExplanation ? 'ALLAN ANJOS' : 'TREINAMENTO'}
+                {/* Header */}
+                <header className="flex justify-between items-center p-6 border-b border-white/5 bg-slate-950/30 shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <span className="material-symbols-outlined text-xl">{aiExplanation ? 'psychology' : 'school'}</span>
+                        </div>
+                        <div>
+                            <h2 className="text-sm font-display font-black text-white uppercase tracking-wider leading-none">
+                                {aiExplanation ? 'Mestre Allan Anjos' : 'Protocolo de Treino'}
                             </h2>
-                            <p className="text-[10px] font-display font-bold text-slate-500 tracking-wider">
-                                {aiExplanation ? 'MENTORIA DE ALTA PERFORMANCE' : 'PROTOCOLO DE APRENDIZADO'}
+                            <p className="text-[9px] font-display font-bold text-slate-500 uppercase tracking-widest mt-1">
+                                {aiExplanation ? 'Mentoria Neural Ativa' : 'Aprimoramento de Habilidades'}
                             </p>
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-white transition-all shadow-xl"
-                        >
-                            <span className="material-symbols-outlined">close</span>
-                        </button>
-                    </header>
+                    </div>
+                    <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
+                        <span className="material-symbols-outlined">close</span>
+                    </button>
+                </header>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-6">
+                <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col min-h-0">
+                    {/* Optional Visual Section - Only if enough space or not AI */}
+                    {!aiExplanation && question && (
+                        <div className="p-8 bg-slate-950/20 flex items-center justify-center border-b border-white/5 shrink-0">
+                            <div className="scale-100">
+                                {question.opType === 'power' && <PowerVisual value={question.values[0]} />}
+                                {question.opType === 'sqrt' && <SqrtVisual target={question.values[0]} answer={question.answer} />}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Content Section */}
+                    <div className="p-8 flex flex-col gap-6">
                         <div key={stepIndex} className="animate-pop-in space-y-4">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-display font-black text-lg">
-                                    {stepIndex + 1}
-                                </div>
-                                <div className="h-[2px] flex-1 bg-gradient-to-r from-primary/30 to-transparent rounded-full" />
+                            <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-display font-black text-primary px-2 py-1 rounded bg-primary/10 border border-primary/20">PASSO {stepIndex + 1}</span>
+                                <div className="h-px flex-1 bg-white/5" />
                             </div>
 
-                            <div className={`font-display leading-relaxed text-white whitespace-pre-wrap ${aiExplanation ? 'text-lg font-medium' : 'text-xl font-medium'}`}>
+                            <div className={`font-sans leading-relaxed text-slate-100 ${aiExplanation ? 'text-base font-medium' : 'text-lg font-semibold'}`}>
                                 {steps[stepIndex]}
                             </div>
 
                             {aiExplanation && (
-                                <div className="mt-6 p-4 bg-primary/5 border border-primary/10 rounded-2xl flex gap-3 items-start">
-                                    <span className="material-symbols-outlined text-primary text-xl">lightbulb</span>
+                                <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex gap-3 items-start mt-8">
+                                    <span className="material-symbols-outlined text-primary text-lg">lightbulb</span>
                                     <div>
-                                        <p className="text-[10px] font-display font-black text-primary uppercase tracking-widest mb-1">Dica de Maestria</p>
-                                        <p className="text-xs text-slate-300">Pressione <span className="text-white border border-white/20 px-1 py-0.5 rounded text-[10px] font-mono">ENTER</span> para prosseguir.</p>
+                                        <p className="text-[9px] font-display font-black text-primary uppercase tracking-widest mb-0.5">Dica Pro</p>
+                                        <p className="text-[11px] text-slate-400">Use <span className="text-white bg-white/10 px-1 rounded font-mono">ENTER</span> para acelerar seu treino.</p>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
-
-                    <div className="mt-8 space-y-4 shrink-0">
-                        {/* Progress Bar */}
-                        <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-primary transition-all duration-700 shadow-[0_0_10px_#10B981]"
-                                style={{ width: `${progress}%` }}
-                            />
-                        </div>
-
-                        <button
-                            onClick={handleNext}
-                            className="w-full h-14 stitch-btn stitch-btn-primary"
-                        >
-                            <span className="font-display font-bold tracking-[0.2em] text-xs">
-                                {isLastStep ? (aiExplanation ? 'RECEBIDO, PRÓXIMO' : 'FECHAR PROTOCOLO') : 'PRÓXIMO PASSO'}
-                            </span>
-                            <span className="material-symbols-outlined text-base">
-                                {isLastStep ? 'check_circle' : 'arrow_forward'}
-                            </span>
-                        </button>
-                    </div>
                 </div>
+
+                {/* Footer Controls */}
+                <footer className="p-6 bg-slate-950/30 border-t border-white/5 shrink-0 space-y-4">
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
+                    </div>
+
+                    <button
+                        onClick={handleNext}
+                        className="w-full h-14 gradient-button rounded-xl text-white font-display font-bold text-xs uppercase tracking-[0.2em] shadow-neon flex items-center justify-center gap-3 active:scale-95 transition-all"
+                    >
+                        {isLastStep ? (aiExplanation ? 'ENTENDIDO, PRÓXIMO' : 'FECHAR TREINAMENTO') : 'PRÓXIMO PASSO'}
+                        <span className="material-symbols-outlined text-sm">{isLastStep ? 'check_circle' : 'arrow_forward'}</span>
+                    </button>
+                </footer>
             </div>
         </div>
     );
