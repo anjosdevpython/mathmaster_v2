@@ -112,7 +112,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                         className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 transition-all duration-300 group/avatar cursor-pointer hover:scale-110 active:scale-95 flex flex-col items-center"
                         title={userLabel}
                     >
-                        <span className="material-symbols-outlined text-2xl sm:text-3xl text-slate-500 group-hover/avatar:text-primary transition-colors animate-pulse-slow">settings</span>
+                        <span className="material-symbols-outlined text-2xl sm:text-3xl text-slate-500 group-hover/avatar:text-primary transition-colors animate-pulse-slow">settings_account_box</span>
                         <span className="mt-1 text-[7px] sm:text-[8px] font-display font-bold text-primary/70 uppercase tracking-widest whitespace-nowrap opacity-40 group-hover/avatar:opacity-100 transition-opacity pointer-events-none">{userLabel}</span>
                     </button>
 
