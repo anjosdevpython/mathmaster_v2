@@ -12,7 +12,7 @@ export const aiService = {
         // Detectar o operador para o fallback
         const operator = question.includes('+') ? '+' :
             question.includes('-') ? '-' :
-                question.includes('x') || question.includes('*') ? '*' :
+                question.includes('x') || question.includes('*') || question.includes('×') ? '*' :
                     question.includes('/') || question.includes('÷') ? '/' : '+';
 
         const fallback = STATIC_FALLBACKS[operator] || STATIC_FALLBACKS['+'];
