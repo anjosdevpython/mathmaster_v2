@@ -12,7 +12,7 @@ interface HomeViewProps {
 
 export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, selectedOps, setSelectedOps }) => {
     const [showAuth, setShowAuth] = useState(false);
-    const [userLabel, setUserLabel] = useState('Acesso Neural');
+    const [userLabel, setUserLabel] = useState('');
     const [timedTraining, setTimedTraining] = useState(false);
 
     useEffect(() => {
