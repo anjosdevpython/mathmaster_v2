@@ -44,4 +44,5 @@ export interface GameStats {
   currentQuestionIndex: number;
   correctInLevel: number;
   perfectLevel: boolean;
+  streak: number;
 }

@@ -9,12 +9,47 @@ interface LevelSelectViewProps {
 }
 
 const LEVEL_ICONS = [
-    "person", "school", "menu_book", "diversity_3", "rocket", // 1-5
-    "ninja", "swords", "scroll", "auto_fix_high", "military_tech", // 6-10
-    "fitness_center", "robot", "local_fire_department", "pets", "workspace_premium", // 11-15
-    "atom", "balance", "public", "comet", "wb_sunny", // 16-20
-    "memory", "hub", "visibility", "all_inclusive", "hourglass_empty", // 21-25
-    "emoji_events", "bolt", "star", "yin_yang", "crown" // 26-30
+    // Tier 1 (1-5): Iniciante
+    "person",              // 1: Novato
+    "school",              // 2: Calouro
+    "menu_book",           // 3: Júnior
+    "military_tech",       // 4: Cadete
+    "badge",               // 5: Agente
+
+    // Tier 2 (6-10): Intermediário
+    "flight",              // 6: Piloto
+    "sports_martial_arts", // 7: Ninja
+    "swords",              // 8: Samurai
+    "shield",              // 9: Guerreiro
+    "psychology",          // 10: Sábio
+
+    // Tier 3 (11-15): Avançado
+    "auto_fix_high",       // 11: Bruxo
+    "workspace_premium",   // 12: Elite
+    "fitness_center",      // 13: Titã
+    "smart_toy",           // 14: Ciborgue
+    "local_fire_department", // 15: Fênix
+
+    // Tier 4 (16-20): Expert
+    "pets",                // 16: Dragão
+    "castle",              // 17: Lorde
+    "star",                // 18: Alfa
+    "all_inclusive",       // 19: Ômega
+    "rocket",              // 20: Galático
+
+    // Tier 5 (21-25): Mestre
+    "blur_on",             // 21: Cósmico
+    "atom",                // 22: Quantum
+    "grid_on",             // 23: Matrix
+    "visibility",          // 24: Oráculo
+    "all_inclusive",       // 25: Infinito
+
+    // Tier 6 (26-30): Lenda
+    "hourglass_empty",     // 26: Eterno
+    "emoji_events",        // 27: Lenda
+    "bolt",                // 28: Mito
+    "wb_sunny",            // 29: Deus
+    "crown"                // 30: MASTER
 ];
 
 export const LevelSelectView: React.FC<LevelSelectViewProps> = ({ setGameState, startLevel, unlockedLevel }) => {

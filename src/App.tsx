@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GameState, GameStats, Question } from './types';
 import { LEVELS, INITIAL_LIVES, BASE_CORRECT_POINTS } from './constants';
-import { generateQuestion } from './services/mathGenerator';
+import { generateQuestion, clearQuestionHistory } from './services/mathGenerator';
 import { audioService } from './services/audioService';
 import { HomeView } from './views/HomeView';
 import { LevelSelectView } from './views/LevelSelectView';
@@ -36,15 +36,21 @@ const App: React.FC = () => {
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [trainingQuestionCount, setTrainingQuestionCount] = useState(0);
+  const [timedTraining, setTimedTraining] = useState(false);
 
   useEffect(() => {
     const data = PersistenceService.load();
     setUnlockedLevel(Math.max(1, data.unlockedLevel));
   }, []);
 
-  const startLevel = useCallback((levelNum: number, reset = false, isTraining = false) => {
+  const startLevel = useCallback((levelNum: number, reset = false, isTraining = false, withTime = false) => {
     const config = LEVELS[levelNum - 1] || LEVELS[0];
-    const q = generateQuestion(config, selectedOps);
+
+    // Limpa o histórico de questões ao iniciar um novo nível
+    clearQuestionHistory();
+
+    const q = generateQuestion(config, selectedOps, isTraining ? 0 : undefined);
 
     setStats({
       score: reset ? 0 : stats.score,
@@ -53,10 +59,12 @@ const App: React.FC = () => {
       currentQuestionIndex: 0,
       correctInLevel: 0,
       perfectLevel: true,
+      streak: 0,
     });
 
     setCurrentQuestion(q);
-    setTimeLeft(isTraining ? Infinity : config.timePerQuestion);
+    setTimedTraining(withTime);
+    setTimeLeft(isTraining ? (withTime ? config.timePerQuestion : Infinity) : config.timePerQuestion);
     setGameState(isTraining ? GameState.TRAINING : GameState.PLAYING);
     setUserInput('');
     setFeedback(null);
@@ -64,6 +72,7 @@ const App: React.FC = () => {
     setAiExplanation(null);
     setIsLoadingAI(false);
     setVisibleSteps(0);
+    setTrainingQuestionCount(0);
   }, [selectedOps, stats.score]);
 
   const nextQ = useCallback(() => {
@@ -77,9 +86,13 @@ const App: React.FC = () => {
       setUnlockedLevel(p => Math.max(p, nextLevel));
       setGameState(GameState.LEVEL_COMPLETE);
     } else {
-      const q = generateQuestion(config, selectedOps);
+      const q = generateQuestion(config, selectedOps, isTraining ? trainingQuestionCount : undefined);
       setCurrentQuestion(q);
-      if (!isTraining) setTimeLeft(config.timePerQuestion);
+      if (!isTraining) {
+        setTimeLeft(config.timePerQuestion);
+      } else {
+        setTimeLeft(timedTraining ? config.timePerQuestion : Infinity);
+      }
       setStats(p => ({ ...p, currentQuestionIndex: p.currentQuestionIndex + 1 }));
       setUserInput('');
       setFeedback(null);
@@ -88,29 +101,42 @@ const App: React.FC = () => {
       setIsLoadingAI(false);
       setVisibleSteps(0);
     }
-  }, [stats, gameState, selectedOps]);
+  }, [stats, gameState, selectedOps, trainingQuestionCount, timedTraining]);
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!currentQuestion || feedback) return;
 
     if (parseFloat(userInput) === currentQuestion.answer) {
-      audioService.playSuccess();
+      const streakBonus = Math.floor(stats.streak / 3) * 50;
+      const totalPoints = BASE_CORRECT_POINTS + streakBonus;
+
+      audioService.playSuccess(stats.streak);
       const messages = ["EXCELENTE!", "INCRÍVEL!", "CÁLCULO PERFEITO!", "MANDOU BEM!", "FANTÁSTICO!", "GÊNIO!", "ESTRATÉGICO!", "PRECISO!"];
-      setSuccessMessage(messages[Math.floor(Math.random() * messages.length)]);
+      setSuccessMessage(stats.streak >= 2 ? `${messages[Math.floor(Math.random() * messages.length)]} COMBO x${stats.streak + 1}` : messages[Math.floor(Math.random() * messages.length)]);
       setFeedback('correct');
 
       confetti({
-        particleCount: 150,
-        spread: 70,
+        particleCount: 150 + (stats.streak * 20),
+        spread: 70 + (stats.streak * 5),
         origin: { y: 0.6 },
-        colors: ['#10b981', '#22d3ee', '#ffffff']
+        colors: stats.streak >= 5 ? ['#facc15', '#22d3ee', '#ffffff'] : ['#10b981', '#22d3ee', '#ffffff']
       });
 
       if (gameState !== GameState.TRAINING) {
-        setStats(p => ({ ...p, score: p.score + BASE_CORRECT_POINTS, correctInLevel: p.correctInLevel + 1 }));
+        setStats(p => ({
+          ...p,
+          score: p.score + totalPoints,
+          correctInLevel: p.correctInLevel + 1,
+          streak: p.streak + 1
+        }));
       } else {
-        setStats(p => ({ ...p, correctInLevel: p.correctInLevel + 1 }));
+        setStats(p => ({
+          ...p,
+          correctInLevel: p.correctInLevel + 1,
+          streak: p.streak + 1
+        }));
+        setTrainingQuestionCount(prev => prev + 1);
       }
 
       setTimeout(() => {
@@ -131,7 +157,7 @@ const App: React.FC = () => {
         });
 
       if (gameState !== GameState.TRAINING) {
-        setStats(p => ({ ...p, lives: p.lives - 1, perfectLevel: false }));
+        setStats(p => ({ ...p, lives: p.lives - 1, perfectLevel: false, streak: 0 }));
         if (stats.lives <= 1) setGameState(GameState.GAME_OVER);
       }
     }
@@ -149,16 +175,25 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (gameState === GameState.PLAYING && timeLeft > 0) {
+    // Timer para modo jogo normal ou modo treino com tempo
+    const isTimedMode = gameState === GameState.PLAYING || (gameState === GameState.TRAINING && timedTraining);
+
+    // Pausa o timer se a explicação estiver aberta
+    if (isTimedMode && timeLeft > 0 && !showExplanation) {
       const timer = setInterval(() => {
         setTimeLeft(p => {
-          if (p <= 0.1) { setGameState(GameState.GAME_OVER); return 0; }
+          if (p <= 0.1) {
+            if (gameState === GameState.PLAYING) {
+              setGameState(GameState.GAME_OVER);
+            }
+            return 0;
+          }
           return p - 0.1;
         });
       }, 100);
       return () => clearInterval(timer);
     }
-  }, [gameState, timeLeft]);
+  }, [gameState, timeLeft, showExplanation, timedTraining]);
 
   return (
     <div className="h-[100dvh] w-screen bg-background text-slate-100 flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary/30">

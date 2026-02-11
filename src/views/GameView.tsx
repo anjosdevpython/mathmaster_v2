@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { GameState, GameStats, Question } from '../types';
 import { TutorialOverlay } from '../components/TutorialOverlay';
+import { audioService } from '../services/audioService';
 
 interface GameViewProps {
     gameState: GameState;
@@ -29,6 +30,52 @@ export const GameView: React.FC<GameViewProps> = ({
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const isTraining = gameState === GameState.TRAINING;
+    const [hasPlayedWarning, setHasPlayedWarning] = useState(false);
+    const [isTickTocking, setIsTickTocking] = useState(false);
+
+    // Cores baseadas no Streak
+    const getStreakColor = () => {
+        if (stats.streak >= 10) return 'text-orange-500 shadow-[0_0_25px_rgba(249,115,22,0.4)]';
+        if (stats.streak >= 5) return 'text-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]';
+        if (stats.streak >= 2) return 'text-accent shadow-[0_0_15px_rgba(132,204,22,0.2)]';
+        return 'text-primary';
+    };
+
+    const getStreakBorder = () => {
+        if (stats.streak >= 10) return 'border-orange-500/50 bg-orange-500/5 shadow-[0_0_40px_rgba(249,115,22,0.2)] animate-neural-pulse';
+        if (stats.streak >= 5) return 'border-yellow-400/40 bg-yellow-400/5 shadow-[0_0_30px_rgba(250,204,21,0.2)]';
+        if (stats.streak >= 2) return 'border-accent/30 bg-accent/5';
+        return 'border-white/10';
+    };
+
+    // Alerta sonoro aos 5 segundos
+    useEffect(() => {
+        if (!isTraining && timeLeft <= 5 && timeLeft > 4.9 && !hasPlayedWarning) {
+            audioService.playTimeWarning();
+            setHasPlayedWarning(true);
+        }
+        if (timeLeft > 5) {
+            setHasPlayedWarning(false);
+        }
+    }, [timeLeft, isTraining, hasPlayedWarning]);
+
+    // Tick-tock nos últimos 3 segundos
+    useEffect(() => {
+        if (!isTraining && timeLeft <= 3 && timeLeft > 0) {
+            if (!isTickTocking) {
+                setIsTickTocking(true);
+                const interval = setInterval(() => {
+                    audioService.playTick();
+                }, 1000);
+                return () => {
+                    clearInterval(interval);
+                    setIsTickTocking(false);
+                };
+            }
+        } else {
+            setIsTickTocking(false);
+        }
+    }, [timeLeft, isTraining, isTickTocking]);
 
     useEffect(() => {
         if (!feedback && !showExplanation) {
@@ -68,8 +115,12 @@ export const GameView: React.FC<GameViewProps> = ({
                     {!isTraining && (
                         <div className="flex flex-col items-end">
                             <span className="text-[9px] uppercase tracking-widest text-primary font-bold">Tempo</span>
-                            <div className={`flex items-center gap-1 tabular-nums transition-colors ${timeLeft <= 5 ? 'text-red-400' : 'text-primary'}`}>
-                                <span className="material-icons text-xs">schedule</span>
+                            <div className={`flex items-center gap-1 tabular-nums transition-all duration-300 ${timeLeft <= 3 ? 'text-red-500 animate-pulse scale-110' :
+                                timeLeft <= 5 ? 'text-orange-400' :
+                                    'text-primary'
+                                }`}>
+                                <span className={`material-icons text-xs ${timeLeft <= 3 ? 'animate-bounce' : ''
+                                    }`}>schedule</span>
                                 <span className="text-sm font-bold glow-text">00:{time.s}</span>
                                 <span className="text-[9px] opacity-50">.{time.ms}</span>
                             </div>
@@ -89,22 +140,24 @@ export const GameView: React.FC<GameViewProps> = ({
 
                 {/* Points & Stats HUD */}
                 <div className="flex justify-between items-center mt-1">
-                    <div className="glass-panel px-3 py-1 rounded-full flex items-center gap-2 border-primary/20 backdrop-blur-md">
+                    <div className={`glass-panel px-3 py-1 rounded-full flex items-center gap-2 border-primary/20 backdrop-blur-md transition-all duration-500 ${stats.streak >= 5 ? 'scale-110 -translate-y-1 border-yellow-500/30' : ''}`}>
                         <div className="flex flex-col">
                             <span className="text-[6px] uppercase tracking-tighter text-slate-400 leading-none">Pontos</span>
-                            <span className="text-primary font-bold tracking-tight text-[9px] leading-none mt-1">{stats.score.toLocaleString()}</span>
+                            <span className={`font-bold tracking-tight text-[10px] leading-none mt-1 transition-colors ${getStreakColor()}`}>{stats.score.toLocaleString()}</span>
                         </div>
                         <div className="h-3 w-[1px] bg-white/10" />
                         <div className="flex flex-col">
                             <span className="text-[6px] uppercase tracking-tighter text-slate-400 leading-none">Combo</span>
-                            <span className="text-success font-bold tracking-tight text-[9px] leading-none mt-1">x{stats.correctInLevel}</span>
+                            <span className={`font-bold tracking-tight text-[10px] leading-none mt-1 transition-all ${stats.streak > 0 ? 'scale-110 ' + getStreakColor() : 'text-success'}`}>
+                                x{stats.streak}
+                            </span>
                         </div>
                     </div>
                     <div className="flex items-center gap-1">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div
                                 key={i}
-                                className={`h-1 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-5 bg-primary shadow-[0_0_8px_#22d3ee]' : 'w-1 bg-white/10'}`}
+                                className={`h-1.5 transition-all duration-300 rounded-full ${i < stats.lives ? 'w-6 bg-primary shadow-[0_0_10px_#22d3ee]' : 'w-1.5 bg-white/10'}`}
                             />
                         ))}
                     </div>
@@ -123,7 +176,7 @@ export const GameView: React.FC<GameViewProps> = ({
                         </h1>
                     </div>
 
-                    <div className="w-full relative group max-w-[280px] sm:max-w-[320px]">
+                    <div className={`w-full relative group max-w-[280px] sm:max-w-[320px] transition-all duration-300 ${feedback === 'wrong' ? 'animate-shake' : ''}`}>
                         <input
                             ref={inputRef}
                             type="number"
@@ -131,14 +184,21 @@ export const GameView: React.FC<GameViewProps> = ({
                             onChange={(e) => setUserInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                             placeholder="?"
-                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' : 'border-white/10 focus:border-primary/50'} rounded-2xl p-4 py-6 text-4xl sm:text-5xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
+                            className={`w-full bg-white/5 border-2 ${feedback === 'wrong' ? 'border-red-500/40 text-red-400' :
+                                    timeLeft <= 3 ? 'border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.3)]' :
+                                        timeLeft <= 5 ? 'border-orange-400/40' :
+                                            getStreakBorder()
+                                } rounded-2xl p-4 py-10 text-6xl sm:text-7xl font-display font-black text-center outline-none transition-all duration-500 placeholder:text-white/5 shadow-2xl group-hover:bg-white/10 overflow-hidden`}
                             autoFocus
                         />
                         <button
                             onClick={handleSubmit}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-primary text-background-dark rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shadow-neon hover:scale-105 active:scale-95 transition-all"
+                            className={`absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shadow-neon hover:scale-105 active:scale-95 transition-all ${stats.streak >= 10 ? 'bg-orange-500 text-white shadow-[0_0_20px_#f97316]' :
+                                stats.streak >= 5 ? 'bg-yellow-400 text-slate-900 shadow-[0_0_15px_#facc15]' :
+                                    'bg-primary text-background-dark'
+                                }`}
                         >
-                            <span className="material-symbols-outlined font-black">check</span>
+                            <span className="material-symbols-outlined font-black">{stats.streak >= 5 ? 'electric_bolt' : 'check'}</span>
                         </button>
                     </div>
 

@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 
 interface HomeViewProps {
     setGameState: (state: GameState) => void;
-    startLevel: (level: number, reset?: boolean, isTraining?: boolean) => void;
+    startLevel: (level: number, reset?: boolean, isTraining?: boolean, timedTraining?: boolean) => void;
     selectedOps: string[];
     setSelectedOps: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -13,6 +13,7 @@ interface HomeViewProps {
 export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, selectedOps, setSelectedOps }) => {
     const [showAuth, setShowAuth] = useState(false);
     const [userLabel, setUserLabel] = useState('Acesso Neural');
+    const [timedTraining, setTimedTraining] = useState(false);
 
     useEffect(() => {
         const checkUser = async () => {
@@ -36,7 +37,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
         { id: '*', icon: 'close', label: 'MULT' },
         { id: '/', icon: 'percent', label: 'DIV' },
         { id: 'power', icon: 'X²', label: 'POT', isText: true },
-        { id: 'sqrt', icon: 'square_foot', label: 'RAIZ' },
+        { id: 'sqrt', icon: '√', label: 'RAIZ', isText: true },
         { id: 'percentage', icon: 'auto_graph', label: 'LOG' }
     ];
 
@@ -45,12 +46,12 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
     };
 
     return (
-        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-7xl mx-auto h-full px-6 py-6 lg:px-8 lg:py-12 lg:items-center justify-between gap-8 lg:gap-12 animate-pop-in overflow-y-auto">
+        <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-7xl mx-auto h-full px-6 py-4 lg:px-8 lg:py-8 justify-between gap-8 lg:gap-12 animate-pop-in overflow-hidden">
             {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
             {/* Left Column: Branding & Stats (Desktop) */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:w-1/2 flex-1 justify-center py-4 relative">
-                <header className="w-full flex flex-col items-center lg:items-start mb-8 lg:mb-12">
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:w-1/2 flex-1 relative lg:pt-0">
+                <header className="w-full flex flex-col items-center lg:items-start mb-1 lg:mb-2 lg:-mt-10">
                     <div className="flex flex-col items-center lg:items-start space-y-2">
                         <div className="relative inline-block w-full max-w-[200px] md:max-w-[300px] lg:max-w-[400px] transition-all duration-700 hover:scale-[1.02]">
                             {/* Logo Image */}
@@ -76,7 +77,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                     </div>
                 </header>
 
-                <div className="flex flex-col items-center lg:items-start space-y-10">
+                <div className="flex flex-col items-center lg:items-start space-y-2">
                     <div className="hidden lg:flex flex-col space-y-6">
                         <div className="flex items-center gap-6 group">
                             <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-all">
@@ -158,11 +159,29 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                             </button>
 
                             <button
-                                onClick={() => startLevel(1, true, true)}
+                                onClick={() => startLevel(1, true, true, timedTraining)}
                                 className="w-full h-18 stitch-btn stitch-btn-outline"
                             >
                                 <span className="font-display font-bold text-base tracking-[0.15em]">MODO TREINO</span>
                                 <span className="material-symbols-outlined text-slate-400 text-xl">psychology</span>
+                            </button>
+
+                            <button
+                                onClick={() => setTimedTraining(!timedTraining)}
+                                className={`w-full h-14 flex items-center justify-between px-6 rounded-2xl border-2 transition-all ${timedTraining
+                                    ? 'border-primary/40 bg-primary/10 text-primary'
+                                    : 'border-slate-700/30 bg-slate-800/40 text-slate-400 hover:border-slate-500'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <span className="material-symbols-outlined text-xl">{timedTraining ? 'timer' : 'timer_off'}</span>
+                                    <span className="font-display font-bold text-sm tracking-wider">TREINO COM TEMPO</span>
+                                </div>
+                                <div className={`w-12 h-6 rounded-full transition-all relative ${timedTraining ? 'bg-primary' : 'bg-slate-700'
+                                    }`}>
+                                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all ${timedTraining ? 'right-0.5' : 'left-0.5'
+                                        }`} />
+                                </div>
                             </button>
                         </div>
                     </div>

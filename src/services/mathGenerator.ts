@@ -392,51 +392,90 @@ const generateFraction = (tier: number): Omit<Question, 'opType'> => {
 // ─── GCD HELPER ─────────────────────────────────────────
 const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
 
+// ─── QUESTION HISTORY (Anti-repetição) ──────────────────
+const questionHistory = new Set<string>();
+
+export const clearQuestionHistory = (): void => {
+  questionHistory.clear();
+};
+
 // ─── MAIN GENERATOR ─────────────────────────────────────
-export const generateQuestion = (config: LevelConfig, userSelectedOps?: string[]): Question => {
-  const tier = getTier(config.level);
+export const generateQuestion = (config: LevelConfig, userSelectedOps?: string[], trainingQuestionCount?: number): Question => {
+  // Se estiver no modo treino, calcular tier baseado no número de questões respondidas
+  let tier: number;
+  if (trainingQuestionCount !== undefined) {
+    // A cada 5 questões corretas, aumenta 1 tier (máximo 6)
+    tier = Math.min(6, Math.floor(trainingQuestionCount / 5) + 1);
+  } else {
+    tier = getTier(config.level);
+  }
 
   const availableOps = userSelectedOps && userSelectedOps.length > 0
     ? userSelectedOps
     : config.operations;
 
   const safeOps = availableOps.length > 0 ? availableOps : ['+'];
-  const op = pick(safeOps) as OperationType;
 
-  let partial: Omit<Question, 'opType'>;
+  let attempts = 0;
+  const maxAttempts = 50;
+  let question: Question;
 
-  switch (op) {
-    case '+':
-      partial = generateAddition(tier);
+  // Gera questões até encontrar uma que não foi usada recentemente
+  do {
+    const op = pick(safeOps) as OperationType;
+    let partial: Omit<Question, 'opType'>;
+
+    switch (op) {
+      case '+':
+        partial = generateAddition(tier);
+        break;
+      case '-':
+        partial = generateSubtraction(tier);
+        break;
+      case '*':
+        partial = generateMultiplication(tier);
+        break;
+      case '/':
+        partial = generateDivision(tier);
+        break;
+      case 'power':
+        partial = generatePower(tier);
+        break;
+      case 'sqrt':
+        partial = generateSqrt(tier);
+        break;
+      case 'percentage':
+        partial = generatePercentage(tier);
+        break;
+      case 'equation':
+        partial = generateEquation(tier);
+        break;
+      case 'fraction':
+        partial = generateFraction(tier);
+        break;
+      default:
+        partial = generateAddition(tier);
+        break;
+    }
+
+    question = { ...partial, opType: op };
+    attempts++;
+
+    // Se tentou muitas vezes, limpa o histórico e aceita a questão
+    if (attempts >= maxAttempts) {
+      questionHistory.clear();
       break;
-    case '-':
-      partial = generateSubtraction(tier);
-      break;
-    case '*':
-      partial = generateMultiplication(tier);
-      break;
-    case '/':
-      partial = generateDivision(tier);
-      break;
-    case 'power':
-      partial = generatePower(tier);
-      break;
-    case 'sqrt':
-      partial = generateSqrt(tier);
-      break;
-    case 'percentage':
-      partial = generatePercentage(tier);
-      break;
-    case 'equation':
-      partial = generateEquation(tier);
-      break;
-    case 'fraction':
-      partial = generateFraction(tier);
-      break;
-    default:
-      partial = generateAddition(tier);
-      break;
+    }
+  } while (questionHistory.has(question.text));
+
+  // Adiciona a questão ao histórico
+  questionHistory.add(question.text);
+
+  // Limita o tamanho do histórico a 100 questões
+  if (questionHistory.size > 100) {
+    const firstItem = questionHistory.values().next().value;
+    questionHistory.delete(firstItem);
   }
 
-  return { ...partial, opType: op };
+  return question;
 };
