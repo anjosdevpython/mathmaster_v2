@@ -24,7 +24,10 @@ if (supabaseUrl && supabaseAnonKey) {
         from: () => ({
             select: () => ({ eq: () => ({ single: async () => ({ data: null, error: null }) }) }),
             upsert: async () => ({ error: null })
-        })
+        }),
+        functions: {
+            invoke: async () => ({ data: null, error: new Error('Supabase keys missing in environment') })
+        }
     } as unknown as SupabaseClient;
 }
 

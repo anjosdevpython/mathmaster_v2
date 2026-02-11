@@ -30,7 +30,8 @@ export const aiService = {
             return data.choices[0].message.content;
         } catch (error: any) {
             console.error("AI Service failure, using fallback:", error);
-            return fallback;
+            // Se o erro for crítico, mostra o erro no lugar do macete para debug
+            return `[O QUE HOUVE]\n\nErro crítico na conexão neural.\n\nDetalhe: ${error.message}\n\n[MISSÃO]\n\nVerifique as chaves VITE_SUPABASE no painel da Vercel.`;
         }
     }
 };
