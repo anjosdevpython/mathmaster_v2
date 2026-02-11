@@ -98,16 +98,6 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                             </div>
                         </div>
                     </div>
-
-                    {/* Login Button moved to a more accessible but non-blocking spot */}
-                    <button
-                        onClick={() => setShowAuth(true)}
-                        className="group relative flex items-center gap-3 bg-slate-950/40 backdrop-blur-2xl border border-white/5 hover:border-primary/30 px-6 py-3 rounded-2xl hover:bg-slate-900 transition-all text-slate-400 hover:text-white shadow-2xl"
-                    >
-                        <span className="text-[10px] font-display font-bold tracking-widest uppercase">{userLabel}</span>
-                        <span className="material-symbols-outlined text-xl">person</span>
-                        <div className="absolute inset-0 rounded-2xl border border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                    </button>
                 </div>
 
                 <div className="block lg:hidden w-full h-px bg-white/5 my-4"></div>
@@ -116,9 +106,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
             {/* Right Column: Interaction Panel */}
             <div className="flex flex-col items-center lg:w-[480px] space-y-8">
                 <div className="w-full bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <span className="material-symbols-outlined text-6xl">settings_account_box</span>
-                    </div>
+                    <button
+                        onClick={() => setShowAuth(true)}
+                        className="absolute top-4 right-4 z-20 p-3 rounded-2xl border border-white/5 hover:border-primary/30 bg-slate-900/60 hover:bg-slate-800 backdrop-blur-xl transition-all duration-300 group/avatar cursor-pointer hover:scale-105 active:scale-95"
+                        title={userLabel}
+                    >
+                        <span className="material-symbols-outlined text-3xl text-slate-500 group-hover/avatar:text-primary transition-colors">settings_account_box</span>
+                        <span className="absolute -bottom-8 right-0 text-[8px] font-display font-bold text-primary/70 uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/avatar:opacity-100 transition-opacity pointer-events-none">{userLabel}</span>
+                    </button>
 
                     <div className="relative z-10 space-y-8">
                         <div>
