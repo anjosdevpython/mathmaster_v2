@@ -109,11 +109,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ setGameState, startLevel, se
                 <div className="w-full bg-slate-900/40 backdrop-blur-3xl border border-white/10 p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl relative overflow-hidden group">
                     <button
                         onClick={() => setShowAuth(true)}
-                        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 p-2.5 sm:p-3 rounded-2xl border border-white/5 hover:border-primary/30 bg-slate-900/60 hover:bg-slate-800 backdrop-blur-xl transition-all duration-300 group/avatar cursor-pointer hover:scale-105 active:scale-95"
+                        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 transition-all duration-300 group/avatar cursor-pointer hover:scale-110 active:scale-95 flex flex-col items-center"
                         title={userLabel}
                     >
-                        <span className="material-symbols-outlined text-2xl sm:text-3xl text-slate-500 group-hover/avatar:text-primary transition-colors">settings_account_box</span>
-                        <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[8px] font-display font-bold text-primary/70 uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/avatar:opacity-100 transition-opacity pointer-events-none">{userLabel}</span>
+                        <span className="material-symbols-outlined text-2xl sm:text-3xl text-slate-500 group-hover/avatar:text-primary transition-colors animate-pulse-slow">settings</span>
+                        <span className="mt-1 text-[7px] sm:text-[8px] font-display font-bold text-primary/70 uppercase tracking-widest whitespace-nowrap opacity-40 group-hover/avatar:opacity-100 transition-opacity pointer-events-none">{userLabel}</span>
                     </button>
 
                     <div className="relative z-10 space-y-8">
